@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <i2c.h>
 #include <math.h>		// Required for altitude measurement
-#include "EOSS_Project_Functions.h"
+#include "EOSS_Project.h"
 
 #pragma config OSC=INTIO67, WDT=OFF, LVP=OFF, DEBUG=ON
 
