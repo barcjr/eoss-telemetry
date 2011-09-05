@@ -43,6 +43,7 @@
 #include <timers.h>
 #include <math.h>		// Required for altitude measurement
 #include "EOSS_Project.h"
+#include "../BMP085/BMP085.c"		// IMPORTANT - Must include functions for BMP085 sensor!
 
 
 #pragma config OSC=INTIO67, WDT=OFF, LVP=OFF, DEBUG=ON
@@ -77,9 +78,6 @@ rom const unsigned char MorseCodeLib[22][4] =
 	{0x73, 0x75, 0xB9, 0x18},  // Callsign 3
 	{0x0A, 0x00, 0x00, 0x07}   // Callsign 4
 };
-
-// BMP stuff can be included now.
-#include "EOSS_BMP085.c"		// IMPORTANT - Must include functions for BMP085 sensor!
 
 // Timing stuff, all measured in ticks
 long timeSinceCallsign = 65280;		// 2^16 - 2^8 This is so that the PIC transmits the callsign as soon as 
