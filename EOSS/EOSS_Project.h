@@ -10,7 +10,6 @@ void openTxUsart();
 unsigned char *formatAltitude(signed short alt);
 void txUsart(const rom char *dataString);
 void BMP085_Calibration(void);
-short bmp085ReadShort(unsigned char address);
 short bmp085ReadTemp(void);
 short bmp085ReadPressure(void);
 void bmp085Convert(long *temperature, long *pressure);
