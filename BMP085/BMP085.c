@@ -5,9 +5,9 @@
 * Line length:  	120 characters [only if the length is longer than 80 chars]
 * Functions:    	See Below
 *
-* Date:				Authors:					Comments:
-* 16 Jul 2011   	Austin Schaller    			Created
-*					Nick ODell
+* Date:			Authors:			Comments:
+* 16 Jul 2011   	Austin Schaller    		Created
+*			Nick ODell
 *
 ************************************************************************/
 
@@ -47,13 +47,13 @@ unsigned short ac6;
 
 /************************************************************************
 *
-* Purpose:      Configures USART module for TX operation
-* Passed:       SPBRG, TXSTA, RCSTA
-* Returned:     None
+* Purpose:      	Configures USART module for TX operation
+* Passed:       	SPBRG, TXSTA, RCSTA
+* Returned:     	None
 * Note:			Asynchronous Mode
 *
 * Date:			Author:				Comments:
-* 20 Sep 2011	Austin Schaller     Created
+* 20 Sep 2011		Austin Schaller     		Created
 *
 ************************************************************************/
 void openTxUsart(void)
