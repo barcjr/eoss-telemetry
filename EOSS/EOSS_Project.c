@@ -1,4 +1,3 @@
-
 /************************************************************************
 *
 * Module:       	EOSS_Project.C
@@ -7,9 +6,9 @@
 * Line length:  	120 characters [only if the length is longer than 80 chars]
 * Functions:    	See Below
 *
-* Date:				Authors:					Comments:
-* 2 Jul 2011   		Austin Schaller    			Created
-*					Nick ODell
+* Date:			Authors:			Comments:
+* 2 Jul 2011   		Austin Schaller    		Created
+*			Nick ODell
 *
 ************************************************************************/
 
@@ -116,8 +115,8 @@ unsigned char slowTimeLeft;		// Transmit 25 times slower (i.e. 3 second element 
 *				MorseCodeLib.
 * Returned:     0-1 depending on the state of the bit.
 * Note:			
-* Date:			Author:				Comments:
-* 16 Apr 2011	Nick ODell          Created
+* Date:		Author:			Comments:
+* 16 Apr 2011	Nick ODell		Created
 *
 ************************************************************************/
 
@@ -175,8 +174,8 @@ void stepMorse()
 *
 * Returned:     None
 *
-* Date:			Author:				Comments:
-* 16 Apr 2011	Nick O'Dell         Created
+* Date:		Author:			Comments:
+* 16 Apr 2011	Nick O'Dell         	Created
 *
 ************************************************************************/
 void scheduleMorse(unsigned char *morse)
@@ -210,8 +209,8 @@ void scheduleMorse(unsigned char *morse)
 * Passed:       None
 * Returned:     None
 *
-* Date:			Author:				Comments:
-* 16 Apr 2011	Nick O'Dell         Created
+* Date:		Author:			Comments:
+* 16 Apr 2011	Nick O'Dell		Created
 *
 ************************************************************************/
 void txCallSign()
@@ -230,8 +229,8 @@ void txCallSign()
 * Returned:     None
 * Note:			Asynchronous Mode
 *
-* Date:			Author:				Comments:
-* 20 Sep 2011	Austin Schaller     Created
+* Date:		Author:			Comments:
+* 20 Sep 2011	Austin Schaller     	Created
 *
 ************************************************************************/
 void openTxUsart(void)
@@ -251,8 +250,8 @@ void openTxUsart(void)
 * Passed:       Altitude
 * Returned:     Pointer to array
 *
-* Date:			Author:				Comments:
-* 16 Apr 2011	Nick O'Dell         Created
+* Date:		Author:			Comments:
+* 16 Apr 2011	Nick O'Dell         	Created
 *
 ************************************************************************/
 unsigned char *formatAltitude(signed short alt)
@@ -314,8 +313,8 @@ unsigned char *formatAltitude(signed short alt)
 * Passed:       TXIF, TXREG
 * Returned:     None
 *
-* Date:			Author:				Comments:
-* 20 Sep 2011	Austin Schaller     Created
+* Date:		Author:			Comments:
+* 20 Sep 2011	Austin Schaller     	Created
 *
 ************************************************************************/
 void txUsart(const rom char *data)
@@ -345,7 +344,7 @@ void main()
 	while(!OSCCONbits.IOFS);
 	TRISA = 0x00;
 	
-	// Initialize I²C
+	// Initialize Iï¿½C
 	// Intialize SPI
 	
 	while(1)
@@ -389,7 +388,7 @@ void main()
 		if(timeSinceCallsign & 0xFF == nextReadingTime)
 		{
 			//bmp085Convert(&temperature, &pressure);
-			// Store temperature, pressure in I²C Memory
+			// Store temperature, pressure in Iï¿½C Memory
 		}
 	}
 }
