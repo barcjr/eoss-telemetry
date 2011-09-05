@@ -26,22 +26,6 @@
 #define 	BMP085_W 	0xEE
 #define 	OSS 		0		// Oversampling Setting (note: code is not set up to use other OSS values)
 
-
-//** Globals Variables **************************************************
-
-// Voodoo calibration varibles
-short ac1;
-short ac2;
-short ac3;
-short b1;
-short b2;
-short mb;
-short mc;
-short md;
-unsigned short ac4;
-unsigned short ac5;
-unsigned short ac6;
-
 // BMP stuff can be included now.
 #include "BMP085.c"		// IMPORTANT - Must include functions for BMP085 sensor!
 

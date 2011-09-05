@@ -80,19 +80,6 @@ rom const unsigned char MorseCodeLib[22][4] =
 	{0x0A, 0x00, 0x00, 0x07}   // Callsign 4
 };
 
-// Voodoo calibration varibles
-short ac1;
-short ac2;
-short ac3;
-short b1;
-short b2;
-short mb;
-short mc;
-short md;
-unsigned short ac4;
-unsigned short ac5;
-unsigned short ac6;
-
 // BMP stuff can be included now.
 #include "EOSS_BMP085.c"		// IMPORTANT - Must include functions for BMP085 sensor!
 

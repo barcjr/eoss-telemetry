@@ -1,3 +1,18 @@
+// * Globals Variables **************************************************
+
+// Voodoo calibration varibles
+short ac1;
+short ac2;
+short ac3;
+short b1;
+short b2;
+short mb;
+short mc;
+short md;
+unsigned short ac4;
+unsigned short ac5;
+unsigned short ac6;
+
 /************************************************************************
 *
 * Purpose:      Delays ms milliseconds
