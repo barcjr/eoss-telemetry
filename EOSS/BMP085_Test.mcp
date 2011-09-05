@@ -1,14 +1,14 @@
 [HEADER]
 magic_cookie={66E99B07-E706-4689-9E80-9B2582898A13}
 file_version=1.0
-device=PIC18F4520
+device=PIC18F452
 [PATH_INFO]
 BuildDirPolicy=BuildDirIsProjectDir
 dir_src=
 dir_bin=
 dir_tmp=
 dir_sin=
-dir_inc=
+dir_inc=C:\Program Files (x86)\Microchip\mplabc18\v3.40\h
 dir_lib=C:\Program Files (x86)\Microchip\mplabc18\v3.40\lib
 dir_lkr=
 [CAT_FILTERS]
@@ -33,8 +33,8 @@ file_001=no
 file_000=no
 file_001=no
 [FILE_INFO]
-file_000=C:\Users\Austin Schaller\Desktop\eoss-telemetry\BMP085\BMP085.c
-file_001=EOSS_BMP085.c
+file_000=EOSS_BMP085.c
+file_001=C:\Users\erh\Desktop\eoss-telemetry\BMP085\BMP085.c
 [SUITE_INFO]
 suite_guid={5B7D72DD-9861-47BD-9F60-2BE967BF8416}
 suite_state=
