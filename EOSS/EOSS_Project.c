@@ -29,8 +29,6 @@
 #define		FOSC		8000000
 #define		BAUD 		9600
 #define 	BMP085_R 	0xEF
-#define 	BMP085_W 	0xEE
-#define 	OSS 		0		// Oversampling Setting (note: code is not set up to use other OSS values)
 
 #define 	sbi(var, mask)   ((var) |= (uint8_t)(1 << mask))
 #define 	cbi(var, mask)   ((var) &= (uint8_t)~(1 << mask))

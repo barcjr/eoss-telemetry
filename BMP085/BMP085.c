@@ -1,3 +1,8 @@
+// * Defines ************************************************************
+#define 	BMP085_R 	0xEF
+#define 	BMP085_W 	0xEE
+#define 	OSS 		0		// Oversampling Setting (note: code is not set up to use other OSS values)
+
 // * Globals Variables **************************************************
 
 // Voodoo calibration varibles
