@@ -132,6 +132,8 @@ void stepMorse()
 	unsigned char oneBit;
 	
 	nextMorseTime = nextMorseTime + (slowTimeLeft == 0 ? 1 : 25);		// Move the trigger for the timer.
+																		// Move it 25 times further if 
+																		// transmitting callsign.
 	
 	oneBit = getBitFromSchedule(txPos);
 	
@@ -278,7 +280,7 @@ unsigned char *formatAltitude(signed short alt)
 		{
 			morse[number_of_array_items] = number;		// morse[number_of_digits] = number; - DBUG
 			number_of_array_items++;
-			leading_zero = FALSE;    
+			leading_zero = FALSE;
 		}
 	}
 	
