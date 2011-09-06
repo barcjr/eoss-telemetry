@@ -91,7 +91,7 @@ unsigned char nextReadingTime = 0;
 unsigned char schedule[32];
 unsigned char txPos;
 unsigned char writePos;
-unsigned char slowTimeLeft;		// Transmit 25 times slower (i.e. 3 second element length) if > 0. Measured in ticks
+unsigned char slowTimeLeft;		// Transmit 25 times slower (i.e. 3 second element length) if > 0. Measured in elements
 
 /************************************************************************
 *
