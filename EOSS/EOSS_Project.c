@@ -79,8 +79,8 @@ rom const unsigned char MorseCodeLib[22][4] =
 };
 
 // Timing stuff, all measured in ticks
-long timeSinceCallsign = 65280;		// 2^16 - 2^8 This is so that the PIC transmits the callsign as soon as 
-									// it boots.
+long timeSinceCallsign = TICKS_PER_CALLSIGN + 1;	// This is so that the PIC transmits the callsign as soon as 
+													// it boots.
 unsigned char nextMorseTime = 0;
 unsigned char nextReadingTime = 0;
 
