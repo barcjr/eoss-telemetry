@@ -29,6 +29,9 @@
 #define		FOSC		8000000
 #define		BAUD 		9600
 
+#define		TRUE		1
+#define		FALSE		0
+
 #define 	sbi(var, mask)   ((var) |= (uint8_t)(1 << mask))
 #define 	cbi(var, mask)   ((var) &= (uint8_t)~(1 << mask))
 
@@ -248,7 +251,7 @@ unsigned char *formatAltitude(signed short alt)
 	morse[0] = PREFIX;
 	number_of_array_items++;
 	
-	leading_zero = 1;  	// This should only be 1/0
+	leading_zero = TRUE;
 	
 	// This counts down from 3 to 0 because the most significant digit comes first.
 	for(i = 3; i >= 0; i--)
@@ -267,7 +270,7 @@ unsigned char *formatAltitude(signed short alt)
 		this digit.
 		*/
 		
-		if(leading_zero == 1 && number == 0 && i != 0)
+		if(leading_zero == TRUE && number == 0 && i != 0)
 		{
 			// Do nothing
 		}
@@ -275,7 +278,7 @@ unsigned char *formatAltitude(signed short alt)
 		{
 			morse[number_of_array_items] = number;		// morse[number_of_digits] = number; - DBUG
 			number_of_array_items++;
-			leading_zero = 0;    
+			leading_zero = FALSE;    
 		}
 	}
 	
