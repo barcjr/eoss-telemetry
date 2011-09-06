@@ -267,7 +267,7 @@ unsigned char *formatAltitude(signed short alt)
 		this digit.
 		*/
 		
-		if(leading_zero == 1 && number == 0 && i < 3)
+		if(leading_zero == 1 && number == 0 && i != 0)
 		{
 			// Do nothing
 		}
