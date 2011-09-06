@@ -32,9 +32,6 @@
 #define		TRUE		1
 #define		FALSE		0
 
-#define 	sbi(var, mask)   ((var) |= (uint8_t)(1 << mask))
-#define 	cbi(var, mask)   ((var) &= (uint8_t)~(1 << mask))
-
 //** Include Files ******************************************************
 
 #include <p18f4520.h>
