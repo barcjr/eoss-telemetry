@@ -131,7 +131,7 @@ void stepMorse()
 {
 	unsigned char oneBit;
 	
-	nextMorseTime = nextMorseTime + (slowTimeLeft == 0 ? 1 : 0x19);		// Move the trigger for the timer.
+	nextMorseTime = nextMorseTime + (slowTimeLeft == 0 ? 1 : 25);		// Move the trigger for the timer.
 	
 	oneBit = getBitFromSchedule(txPos);
 	
