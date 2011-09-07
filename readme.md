@@ -6,7 +6,7 @@ This project, in its finished state, will read pressure and temperature data, re
 Peripherals
 -----------
 
-The PIC has 4 peripherals: The EEPROM (for storing readings), the BMP085 (for capturing readings), the USART (for sending debug messages and the collected data) and last, but not least, the radio on/off pin. 
+The PIC has 4 peripherals: The EEPROM (for storing readings), the BMP085 (for capturing readings), the UART (for sending debug messages and the collected data) and last, but not least, the radio on/off pin. 
 
 Morse Code
 ----------
