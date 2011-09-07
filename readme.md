@@ -1,5 +1,5 @@
-BARC EOSS Telemetry Project
-===========================
+BARC Jr. EOSS Telemetry Project
+===============================
 
 This project, in its finished state, will read pressure and temperature data, record both of them in E²PROM, calculate the present altitude in a temporary variable, and then transmit the altitude over the air via morse code.  Note that some of this documentation describes things that don't exist yet.
 
