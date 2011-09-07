@@ -1,5 +1,5 @@
-BARC EOSS Telemetry Project
-===========================
+BARC Jr. EOSS Telemetry Project
+===============================
 
 This project, in it's finished state, will read pressure and temperature data, record it in an EEPROM, and send it over the air via morse code. Note that some of this documentation describes things that don't exist yet.
 
