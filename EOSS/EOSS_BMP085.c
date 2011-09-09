@@ -18,14 +18,14 @@
 #include <i2c.h>
 #include <math.h>		// Required for altitude measurement
 #include "EOSS_Project.h"
-#include "../BMP085/BMP085.c"		// IMPORTANT - Must include functions for BMP085 sensor!
+#include "../BMP085/BMP085.h"		// IMPORTANT - Must include functions for BMP085 sensor!
 
 #pragma config OSC=INTIO67, WDT=OFF, LVP=OFF, DEBUG=ON
 
 /************************************************************************
 *
 * Purpose:      Configures USART module for TX operation
-* Passed:       SPBRG, TXSTA, RCSTA
+* Passed:       SPBRG, TXSTA, RCSTA		
 * Returned:     None
 * Note:			Asynchronous Mode
 *
