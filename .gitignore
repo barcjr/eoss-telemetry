@@ -1,6 +1,7 @@
 *.err
 *.mcs
 *.mcw
+*.mcp
 *.map
 *.hex
 *.cof

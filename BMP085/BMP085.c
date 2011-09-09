@@ -1,3 +1,4 @@
+#include "../BMP085/BMP085.h"
 
 // * Defines ************************************************************
 #define 	BMP085_R 	0xEF
@@ -76,7 +77,7 @@ void BMP085_Calibration(void)
 * 16 Mar 2011		Austin Schaller     Created
 *
 ************************************************************************/
-long bmp085ReadShort(unsigned char address)
+unsigned short bmp085ReadShort(unsigned char address)
 {
 	unsigned short msb, lsb;
 	unsigned short data;
