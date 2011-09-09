@@ -75,10 +75,10 @@ void BMP085_Calibration(void)
 * 16 Mar 2011		Austin Schaller     Created
 *
 ************************************************************************/
-short bmp085ReadShort(unsigned char address)
+long bmp085ReadShort(unsigned char address)
 {
-	char msb, lsb;
-	short data;
+	unsigned short msb, lsb;
+	unsigned short data;
 	
 	StartI2C();
 	
@@ -115,7 +115,7 @@ short bmp085ReadShort(unsigned char address)
 * 16 Mar 2011		Austin Schaller     Created
 *
 ************************************************************************/
-short bmp085ReadTemp(void)
+long bmp085ReadTemp(void)
 {
 	StartI2C();
 	
@@ -141,7 +141,7 @@ short bmp085ReadTemp(void)
 * 16 Mar 2011		Austin Schaller     Created
 *
 ************************************************************************/
-short bmp085ReadPressure(void)
+long bmp085ReadPressure(void)
 {
 	StartI2C();
 	
@@ -187,7 +187,7 @@ void bmp085Convert(long *temperature, long *pressure)
 	x2 = ac2 * b6 >> 11;
 	x3 = x1 + x2;
 	
-	b3 = (((long) ac1 * 4 + x3) + 2)/4;
+	b3 = (((long) ac1 * 4 + x3) + 2) << 2;
 	x1 = ac3 * b6 >> 13;
 	x2 = (b1 * (b6 * b6 >> 12)) >> 16;
 	x3 = ((x1 + x2) + 2) >> 2;
@@ -199,4 +199,5 @@ void bmp085Convert(long *temperature, long *pressure)
 	x2 = (-7357 * p) >> 16;
 	
 	*pressure = p + ((x1 + x2 + 3791) >> 4);
+	delay_ms(10);
 }
