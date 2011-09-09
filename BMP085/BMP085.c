@@ -28,7 +28,7 @@ unsigned short ac6;
 * Note:
 *
 * Date:				Author:				Comments:
-* 4 Aug 2011		Nick ODell     Created
+* 4 Aug 2011		Nick ODell			Created
 *
 ************************************************************************/
 void delay_ms(unsigned short ms)
@@ -102,7 +102,7 @@ unsigned short bmp085ReadShort(unsigned char address)
 	
 	data = msb << ((short)8);
 	data |= (short)lsb;
-	printf((const far rom char*)"%d\r\n", data);
+	printf((const far rom char*)"Data %d\r\n", data);
 	return data;
 }
 
