@@ -67,6 +67,33 @@ void BMP085_Calibration(void)
 
 /************************************************************************
 *
+* Purpose:      Calibrates the BMP085 pressure sensor with known stuff from
+*				the datasheet. For debugging only.
+* Passed:       Void
+* Returned:     Void
+* Note:
+*
+* Date:				Author:				Comments:
+* 16 Mar 2011		Austin Schaller     Created
+*
+************************************************************************/
+void BMP085_Known_Calibration(void)
+{
+	ac1 = 408;
+	ac2 = -72;
+	ac3 = -14383;
+	ac4 = 32741;
+	ac5 = 32757;
+	ac6 = 23153;
+	b1 = 6190;
+	b2 = 4;
+	mb = -32768;
+	mc = -8711;
+	md = 2868;
+}
+
+/************************************************************************
+*
 * Purpose:      Will read two sequential 8-bit registers, and return
 				a 16-bit value.
 * Passed:       Unsigned char
@@ -176,8 +203,11 @@ void bmp085Convert(long *temperature, long *pressure)
 	long x1, x2, b5, b6, x3, b3, p;
 	unsigned long b4, b7;
 	
-	ut = bmp085ReadTemp();		// Some bug here, have to read twice to get good data
-	up = bmp085ReadPressure();
+	/*ut = bmp085ReadTemp();		// Some bug here, have to read twice to get good data
+	up = bmp085ReadPressure();*/
+	// Debug stuff
+	ut = 27898;
+	up = 23843;
 	
 	x1 = ((long)ut - ac6) * ac5 >> 15;
 	x2 = ((long) mc << 11) / (x1 + md);

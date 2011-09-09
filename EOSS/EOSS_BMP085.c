@@ -70,7 +70,7 @@ void main()
 	delay_ms(100);
 	
 	
-	BMP085_Calibration();
+	BMP085_Known_Calibration();
 	
 	while(1)
 	{
