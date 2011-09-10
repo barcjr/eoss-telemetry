@@ -106,8 +106,8 @@ void BMP085_Known_Calibration(void)
 ************************************************************************/
 unsigned short bmp085ReadShort(unsigned char address)
 {
-	unsigned short msb, lsb;
-	unsigned short data;
+	signed short msb, lsb;
+	signed short data;
 	
 	StartI2C();
 	
@@ -127,8 +127,8 @@ unsigned short bmp085ReadShort(unsigned char address)
 	
 	delay_ms(10);
 	
-	data = msb << ((short)8);
-	data |= (short)lsb;
+	data = msb << 8;
+	data |= lsb;
 	printf((const far rom char*)"Data %d\r\n", data);
 	return data;
 }
@@ -203,11 +203,11 @@ void bmp085Convert(long *temperature, long *pressure)
 	long x1, x2, b5, b6, x3, b3, p;
 	unsigned long b4, b7;
 	
-	/*ut = bmp085ReadTemp();		// Some bug here, have to read twice to get good data
-	up = bmp085ReadPressure();*/
+	ut = bmp085ReadTemp();		// Some bug here, have to read twice to get good data
+	up = bmp085ReadPressure();
 	// Debug stuff
-	ut = 27898;
-	up = 23843;
+	//ut = 27898;
+	//up = 23843;
 	
 	x1 = (ut - ac6) * ac5 >> 15;
 	x2 = (mc << 11) / (x1 + md);

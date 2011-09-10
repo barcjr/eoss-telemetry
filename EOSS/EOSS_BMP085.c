@@ -70,7 +70,13 @@ void main()
 	delay_ms(100);
 	
 	
-	BMP085_Known_Calibration();
+	BMP085_Calibration();
+	
+	printf((const far rom char*) "=========================\r\n");
+	printf((const far rom char*) "=========RESTART=========\r\n");
+	printf((const far rom char*) "=========RESTART=========\r\n");
+	printf((const far rom char*) "=========RESTART=========\r\n");
+	printf((const far rom char*) "=========================\r\n");
 	
 	while(1)
 	{
