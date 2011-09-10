@@ -8,17 +8,17 @@
 // * Globals Variables **************************************************
 
 // Voodoo calibration varibles
-short ac1;
-short ac2;
-short ac3;
-short b1;
-short b2;
-short mb;
-short mc;
-short md;
-unsigned short ac4;
-unsigned short ac5;
-unsigned short ac6;
+long ac1;
+long ac2;
+long ac3;
+long b1;
+long b2;
+long mb;
+long mc;
+long md;
+unsigned long ac4;
+unsigned long ac5;
+unsigned long ac6;
 
 /************************************************************************
 *
@@ -209,8 +209,8 @@ void bmp085Convert(long *temperature, long *pressure)
 	ut = 27898;
 	up = 23843;
 	
-	x1 = ((long)ut - ac6) * ac5 >> 15;
-	x2 = ((long) mc << 11) / (x1 + md);
+	x1 = (ut - ac6) * ac5 >> 15;
+	x2 = (mc << 11) / (x1 + md);
 	b5 = x1 + x2;
 	*temperature = (b5 + 8) >> 4;
 	
@@ -219,17 +219,20 @@ void bmp085Convert(long *temperature, long *pressure)
 	x2 = ac2 * b6 >> 11;
 	x3 = x1 + x2;
 	
-	b3 = (((long) ac1 * 4 + x3) + 2) << 2;
+	b3 = ((((ac1 * 4) + x3) << OSS) + 2) >> 2;
 	x1 = ac3 * b6 >> 13;
 	x2 = (b1 * (b6 * b6 >> 12)) >> 16;
 	x3 = ((x1 + x2) + 2) >> 2;
 	b4 = (ac4 * (unsigned long) (x3 + 32768)) >> 15;
 	b7 = ((unsigned long) up - b3) * (50000 >> OSS);
 	p = b7 < 0x80000000 ? (b7 * 2) / b4 : (b7 / b4) * 2;
+	
 	x1 = (p >> 8) * (p >> 8);
 	x1 = (x1 * 3038) >> 16;
-	x2 = (-7357 * p) >> 16;
+	x2 = (-7357 * p);
+	// Don't know why right-shift 16 doesn't work, but this does.
+	x2 /= ((long)1) << 16;
 	
-	*pressure = p + ((x1 + x2 + 3791) >> 4);
+	*pressure = p + ((x1 + x2 + 3791) / (((long) 1) << 4));
 	delay_ms(10);
 }

@@ -76,8 +76,8 @@ void main()
 	{
 		bmp085Convert(&temperature, &pressure);
 		
-		printf((const far rom char*)"Temperature: %d (in 0.1 deg C)\r\n", temperature);
-		printf((const far rom char*)"Pressure: %d Pa\n\r\n", pressure);
+		printf((const far rom char*)"Temperature: %ld (in 0.1 deg C)\r\n", temperature);
+		printf((const far rom char*)"Pressure: %ld Pa\n\r\n", pressure);
 		
 		// For fun, lets convert to altitude
 		/*temp = (double) pressure/101325;
