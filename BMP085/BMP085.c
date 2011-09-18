@@ -1,9 +1,9 @@
 #include "../BMP085/BMP085.h"
 
 // * Defines ************************************************************
-#define 	BMP085_R 	0xEF
-#define 	BMP085_W 	0xEE
-#define 	OSS 		0		// Oversampling Setting (note: code is not set up to use other OSS values)
+#define		BMP085_R	0xEF
+#define		BMP085_W	0xEE
+#define		OSS			0		// Oversampling Setting (note: code is not set up to use other OSS values)
 
 // * Globals Variables **************************************************
 
@@ -22,9 +22,9 @@ unsigned long ac6;
 
 /************************************************************************
 *
-* Purpose:      Delays ms milliseconds
-* Passed:       Void
-* Returned:     Void
+* Purpose:		Delays ms milliseconds
+* Passed:		Void
+* Returned:		Void
 * Note:
 *
 * Date:				Author:				Comments:
@@ -41,13 +41,13 @@ void delay_ms(unsigned short ms)
 
 /************************************************************************
 *
-* Purpose:      Calibrates the BMP085 pressure sensor.
-* Passed:       Void
-* Returned:     Void
+* Purpose:		Calibrates the BMP085 pressure sensor.
+* Passed:		Void
+* Returned:		Void
 * Note:
 *
 * Date:				Author:				Comments:
-* 16 Mar 2011		Austin Schaller     Created
+* 16 Mar 2011		Austin Schaller		Created
 *
 ************************************************************************/
 void BMP085_Calibration(void)
@@ -67,14 +67,14 @@ void BMP085_Calibration(void)
 
 /************************************************************************
 *
-* Purpose:      Calibrates the BMP085 pressure sensor with known stuff from
+* Purpose:		Calibrates the BMP085 pressure sensor with known stuff from
 *				the datasheet. For debugging only.
-* Passed:       Void
-* Returned:     Void
+* Passed:		Void
+* Returned:		Void
 * Note:
 *
 * Date:				Author:				Comments:
-* 16 Mar 2011		Austin Schaller     Created
+* 16 Mar 2011		Austin Schaller		Created
 *
 ************************************************************************/
 void BMP085_Known_Calibration(void)
@@ -94,14 +94,14 @@ void BMP085_Known_Calibration(void)
 
 /************************************************************************
 *
-* Purpose:      Will read two sequential 8-bit registers, and return
+* Purpose:		Will read two sequential 8-bit registers, and return
 				a 16-bit value.
-* Passed:       Unsigned char
-* Returned:     Short
-* Note:		Return value must be typecast to an signed short if reading a signed value!
+* Passed:		Unsigned char
+* Returned:		Short
+* Note:			Return value must be typecast to an signed short if reading a signed value!
 *
 * Date:				Author:				Comments:
-* 16 Mar 2011		Austin Schaller     Created
+* 16 Mar 2011		Austin Schaller		Created
 *
 ************************************************************************/
 unsigned short bmp085ReadShort(unsigned char address)
@@ -135,13 +135,13 @@ unsigned short bmp085ReadShort(unsigned char address)
 
 /************************************************************************
 *
-* Purpose:      Will read the 16-bit temperature value of BMP085 sensor.
-* Passed:       Void
-* Returned:     Long
+* Purpose:		Will read the 16-bit temperature value of BMP085 sensor.
+* Passed:		Void
+* Returned:		Long
 * Note:
 *
 * Date:				Author:				Comments:
-* 16 Mar 2011		Austin Schaller     Created
+* 16 Mar 2011		Austin Schaller		Created
 *
 ************************************************************************/
 long bmp085ReadTemp(void)
@@ -161,13 +161,13 @@ long bmp085ReadTemp(void)
 
 /************************************************************************
 *
-* Purpose:      Will read the 16-bit pressure value from BMP085 sensor.
-* Passed:       Void
-* Returned:     Long
+* Purpose:		Will read the 16-bit pressure value from BMP085 sensor.
+* Passed:		Void
+* Returned:		Long
 * Note:
 *
 * Date:				Author:				Comments:
-* 16 Mar 2011		Austin Schaller     Created
+* 16 Mar 2011		Austin Schaller		Created
 *
 ************************************************************************/
 long bmp085ReadPressure(void)
@@ -187,9 +187,9 @@ long bmp085ReadPressure(void)
 
 /************************************************************************
 *
-* Purpose:      Will read the 16-bit pressure value from BMP085 sensor.
-* Passed:       Long *temperature, long *pressure
-* Returned:     Void
+* Purpose:		Will read the 16-bit pressure value from BMP085 sensor.
+* Passed:		Long *temperature, long *pressure
+* Returned:		Void
 * Note:
 *
 * Date:				Author:				Comments:

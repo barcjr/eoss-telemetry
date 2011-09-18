@@ -1,13 +1,13 @@
 /************************************************************************
 *
-* Module:       	EOSS_Project.C
-* Description:  	Edge Of Space Science (EOSS) Project contributed by
+* Module:			EOSS_Project.C
+* Description:		Edge Of Space Science (EOSS) Project contributed by
 *					BARC Jr.
-* Line length:  	120 characters [only if the length is longer than 80 chars]
-* Functions:    	See Below
+* Line length:		120 characters [only if the length is longer than 80 chars]
+* Functions:		See Below
 *
-* Date:			Authors:			Comments:
-* 2 Jul 2011   		Austin Schaller    		Created
+* Date:				Authors:			Comments:
+* 2 Jul 2011		Austin Schaller		Created
 *			Nick ODell
 *
 ************************************************************************/
@@ -16,12 +16,12 @@
 
 /** Defines ************************************************************/
 
-#define		MORSE_PIN                     	0
-#define     MS_PER_TICK						120
-#define     INTERRUPT_CLOCK_SETTING			64598		/*	(65536 - 64598) * 128E-6 = 120mS 
+#define		MORSE_PIN						0
+#define		MS_PER_TICK						120
+#define		INTERRUPT_CLOCK_SETTING			64598		/*	(65536 - 64598) * 128E-6 = 120mS 
 															(Prescaler = 1:256)
 															Change the 64598 if you change the clock speed.	*/
-#define     TICKS_PER_CALLSIGN				5000		//(10 * 60 * 1000)/MS_PER_TICK
+#define		TICKS_PER_CALLSIGN				5000		//(10 * 60 * 1000)/MS_PER_TICK
 #define		PREFIX							16
 #define		SUFFIX							17
 #define		TERMINATOR						0xFF
@@ -92,12 +92,12 @@ unsigned char slowTimeLeft;		// Transmit 25 times slower (i.e. 3 second element 
 
 /************************************************************************
 *
-* Purpose:      To look at the schedule and find the scheduled bit.
-* Passed:       0-255 depending on which bit you want to look at from the
+* Purpose:		To look at the schedule and find the scheduled bit.
+* Passed:		0-255 depending on which bit you want to look at from the
 *				MorseCodeLib.
-* Returned:     0-1 depending on the state of the bit.
+* Returned:		0-1 depending on the state of the bit.
 * Note:			
-* Date:		Author:			Comments:
+* Date:			Author:			Comments:
 * 16 Apr 2011	Nick ODell		Created
 *
 ************************************************************************/
@@ -115,13 +115,13 @@ unsigned char getBitFromSchedule(unsigned char bitPos)
 	
 /************************************************************************
 *
-* Purpose:      Called when the main loop deems it time to tranmit the next segment.
-* Passed:       None
-* Returned:     None
+* Purpose:		Called when the main loop deems it time to tranmit the next segment.
+* Passed:		None
+* Returned:		None
 * Note:			
 * Date:			Author:				Comments:
-* 7  Mar 2011	Austin Schaller     Created
-* 16 Apr 2011	Nick ODell          Gutted; renamed; replaced;
+* 7 Mar 2011	Austin Schaller		Created
+* 16 Apr 2011	Nick ODell			Gutted; renamed; replaced;
 *
 ************************************************************************/
 void stepMorse()
@@ -152,14 +152,12 @@ void stepMorse()
 
 /************************************************************************
 *
-* Purpose:      Pushes the items given onto the schedule queue.
-* Passed:       Morse code encoded as what's shown in MorseCodeLib. Terminate
+* Purpose:		Pushes the items given onto the schedule queue.
+* Passed:		Morse code encoded as what's shown in MorseCodeLib. Terminate
 * 				sequences with 0xFF.
-*
-* Returned:     None
-*
-* Date:		Author:			Comments:
-* 16 Apr 2011	Nick O'Dell         	Created
+* Returned:		None
+* Date:			Author:			Comments:
+* 16 Apr 2011	Nick O'Dell		Created
 *
 ************************************************************************/
 void scheduleMorse(unsigned char *morse)
@@ -178,7 +176,7 @@ void scheduleMorse(unsigned char *morse)
 			the byte already in the schedule. Result: We write one element
 			to the schedule.
 			*/
-			   
+			
 			txBit = (MorseCodeLib[index][i >> 3] >> (i & 0x07)) & 0x01;
 			schedule[writePos >> 3] |= txBit << (writePos & 0x07);
 			writePos++;
@@ -188,14 +186,14 @@ void scheduleMorse(unsigned char *morse)
 
 /************************************************************************
 *
-* Purpose:      Determines the length of the block-morse passed to it
-* Passed:       Morse code encoded as what's shown in MorseCodeLib. Terminate
+* Purpose:		Determines the length of the block-morse passed to it
+* Passed:		Morse code encoded as what's shown in MorseCodeLib. Terminate
 * 				sequences with 0xFF.
 *
-* Returned:     The length of the morse sequence in elements.
+* Returned:		The length of the morse sequence in elements.
 *
-* Date:		Author:			Comments:
-* 17 Sep 2011	Nick O'Dell         	Created
+* Date:		Author:				Comments:
+* 17 Sep 2011	Nick O'Dell		Created
 *
 ************************************************************************/
 
@@ -212,12 +210,12 @@ unsigned char getLengthOfMorse(unsigned char *morse)
 
 /************************************************************************
 *
-* Purpose:      Pushes the callsign onto the schedule queue. This function
+* Purpose:		Pushes the callsign onto the schedule queue. This function
 * expects that txPos == writePos
-* Passed:       None
-* Returned:     None
+* Passed:		None
+* Returned:		None
 *
-* Date:		Author:			Comments:
+* Date:			Author:			Comments:
 * 16 Apr 2011	Nick O'Dell		Created
 *
 ************************************************************************/
@@ -232,13 +230,13 @@ void txCallSign()
 
 /************************************************************************
 *
-* Purpose:      Configures USART module for TX operation
-* Passed:       SPBRG, TXSTA, RCSTA
-* Returned:     None
+* Purpose:		Configures USART module for TX operation
+* Passed:		SPBRG, TXSTA, RCSTA
+* Returned:		None
 * Note:			Asynchronous Mode
 *
-* Date:		Author:			Comments:
-* 20 Sep 2011	Austin Schaller     	Created
+* Date:		Author:					Comments:
+* 20 Sep 2011	Austin Schaller		Created
 *
 ************************************************************************/
 void openTxUsart(void)
@@ -254,12 +252,12 @@ void openTxUsart(void)
 
 /************************************************************************
 *
-* Purpose:      Changes altitude into the morse library sequence 
-* Passed:       Altitude
-* Returned:     Pointer to array
+* Purpose:		Changes altitude into the morse library sequence 
+* Passed:		Altitude
+* Returned:		Pointer to array
 *
-* Date:		Author:			Comments:
-* 16 Apr 2011	Nick O'Dell         	Created
+* Date:			Author:			Comments:
+* 16 Apr 2011	Nick O'Dell		Created
 *
 ************************************************************************/
 unsigned char *formatAltitude(signed short alt)
@@ -317,21 +315,21 @@ unsigned char *formatAltitude(signed short alt)
 
 /************************************************************************
 *
-* Purpose:      Transmits characters
-* Passed:       TXIF, TXREG
-* Returned:     None
+* Purpose:		Transmits characters
+* Passed:		TXIF, TXREG
+* Returned:			None
 *
-* Date:		Author:			Comments:
-* 20 Sep 2011	Austin Schaller     	Created
+* Date:			Author:				Comments:
+* 20 Sep 2011	Austin Schaller		Created
 *
 ************************************************************************/
 void txUsart(const rom char *data)
-{ 
-    char t; 
-    while(t = *data++)
-    {
-	    while(!PIR1bits.TXIF);		// Ready for new character?
-	    TXREG = t;		// Send character
+{
+	char t; 
+	while(t = *data++)
+	{
+		while(!PIR1bits.TXIF);		// Ready for new character?
+		TXREG = t;		// Send character
 	}
 }
 
