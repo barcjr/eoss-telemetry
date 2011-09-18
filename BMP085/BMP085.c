@@ -196,6 +196,12 @@ long bmp085ReadPressure(void)
 * 16 Mar 2011		Austin Schaller		Created
 *
 ************************************************************************/
+
+// The bit-shift for possibly negative numbers.
+// Note that divide has a higher precedence than
+// bit shift, so this is not precisely the same.
+#define SHIFT(shift) (((long) 1) << (shift))
+
 void bmp085Convert(long *temperature, long *pressure)
 {
 	long ut;
@@ -209,30 +215,34 @@ void bmp085Convert(long *temperature, long *pressure)
 	//ut = 27898;
 	//up = 23843;
 	
-	x1 = (ut - ac6) * ac5 >> 15;
-	x2 = (mc << 11) / (x1 + md);
+	
+	// Very sorry about this pile of awful code
+	x1 = (ut - ac6) * ac5 / SHIFT(15);
+	x2 = (mc * SHIFT(11)) / (x1 + md);
 	b5 = x1 + x2;
-	*temperature = (b5 + 8) >> 4;
+	*temperature = (b5 + 8) / SHIFT(4);
 	
 	b6 = b5 - 4000;
-	x1 = (b2 * (b6 * b6 >> 12)) >> 11;
-	x2 = ac2 * b6 >> 11;
+	x1 = (b2 * (b6 * b6 / SHIFT(12))) / SHIFT(11);
+	x2 = ac2 * b6 / SHIFT(11);
 	x3 = x1 + x2;
 	
-	b3 = ((((ac1 * 4) + x3) << OSS) + 2) >> 2;
-	x1 = ac3 * b6 >> 13;
-	x2 = (b1 * (b6 * b6 >> 12)) >> 16;
-	x3 = ((x1 + x2) + 2) >> 2;
-	b4 = (ac4 * (unsigned long) (x3 + 32768)) >> 15;
-	b7 = ((unsigned long) up - b3) * (50000 >> OSS);
+	b3 = ((((ac1 * 4) + x3) << OSS) + 2) / SHIFT(2);
+	x1 = ac3 * b6 / SHIFT(13);
+	x2 = (b1 * (b6 * b6 / SHIFT(12))) / SHIFT(16);
+	x3 = ((x1 + x2) + 2) / SHIFT(2);
+	b4 = (ac4 * (unsigned long) (x3 + 32768)) / SHIFT(15);
+	b7 = ((unsigned long) up - b3) * (50000 >> OSS));
 	p = b7 < 0x80000000 ? (b7 * 2) / b4 : (b7 / b4) * 2;
 	
-	x1 = (p >> 8) * (p >> 8);
-	x1 = (x1 * 3038) >> 16;
-	x2 = (-7357 * p);
-	// Don't know why right-shift 16 doesn't work, but this does.
-	x2 /= ((long)1) << 16;
+	x1 = p / SHIFT(8);
+	x1 *= x1;
+	x1 = (x1 * 3038) / SHIFT(16);
+	x2 = (-7357 * p) / SHIFT(16);
+	x2 = x2 / SHIFT(16);
 	
-	*pressure = p + ((x1 + x2 + 3791) / (((long) 1) << 4));
+	*pressure = p + (x1 + x2 + 3791) / SHIFT(4);
+	
+	// TODO: Remove this and see what happens.
 	delay_ms(10);
 }
