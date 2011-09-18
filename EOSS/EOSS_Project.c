@@ -260,17 +260,20 @@ void openTxUsart(void)
 * 16 Apr 2011	Nick O'Dell		Created
 *
 ************************************************************************/
+
+#define INSERT_IN_MORSE(item) morse[array_index] = item;\
+	array_index++;
+
 unsigned char *formatAltitude(signed short alt)
 {
 	signed char i;
 	unsigned char morse[7];
 	unsigned char leading_zero;
-	unsigned char number_of_array_items = 0;
+	unsigned char array_index = 0;
 	unsigned char *pointer;
 	unsigned char number;
 	
-	morse[0] = PREFIX;
-	number_of_array_items++;
+	INSERT_IN_MORSE(PREFIX)
 	
 	leading_zero = TRUE;
 	
@@ -297,17 +300,14 @@ unsigned char *formatAltitude(signed short alt)
 		}
 		else
 		{
-			morse[number_of_array_items] = number;		// morse[number_of_digits] = number; - DBUG
-			number_of_array_items++;
+			INSERT_IN_MORSE(number);
 			leading_zero = FALSE;
 		}
 	}
 	
-	morse[number_of_array_items] = SUFFIX;			// The "H M" at the end of the sequence
-	number_of_array_items++;
+	INSERT_IN_MORSE(SUFFIX);			// The "H M" at the end of the sequence
 	
-	morse[number_of_array_items] = TERMINATOR;		// Terminator
-	number_of_array_items++;
+	INSERT_IN_MORSE(TERMINATOR);		// Terminator
 	
 	pointer = &morse[0];
 	return pointer;
