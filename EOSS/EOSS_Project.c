@@ -192,7 +192,7 @@ void scheduleMorse(unsigned char *morse)
 * Passed:       Morse code encoded as what's shown in MorseCodeLib. Terminate
 * 				sequences with 0xFF.
 *
-* Returned:     None
+* Returned:     The length of the morse sequence in elements.
 *
 * Date:		Author:			Comments:
 * 17 Sep 2011	Nick O'Dell         	Created

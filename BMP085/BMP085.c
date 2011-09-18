@@ -193,7 +193,7 @@ long bmp085ReadPressure(void)
 * Note:
 *
 * Date:				Author:				Comments:
-* 16 Mar 2011		Austin Schaller     Created
+* 16 Mar 2011		Austin Schaller		Created
 *
 ************************************************************************/
 void bmp085Convert(long *temperature, long *pressure)
