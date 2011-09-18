@@ -129,7 +129,7 @@ unsigned short bmp085ReadShort(unsigned char address)
 	
 	data = msb << 8;
 	data |= lsb;
-	printf((const far rom char*)"Data %d\r\n", data);
+	
 	return data;
 }
 
