@@ -89,5 +89,5 @@ for char in list("0123456789ABCDEF") + ["ALT ", "H M ", CALLSIGN]:
                             str(DATA_BYTES_PER_LINE) + " data bytes")
         format_bytes(char, result)
 
-
-out_file.close()
+if out_file:
+    out_file.close()
