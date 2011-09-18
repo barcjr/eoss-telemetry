@@ -365,7 +365,7 @@ void main()
 			temporary = 1 - pow(temporary, 0.19029);
 			
 			// Will only work if temporary is positive.
-			altitude = floor((44330 * temporary) - 0.5);
+			altitude = floor((44330 * temporary) + 0.5);
 			
 			morse = formatAltitude(altitude);
 			length = getLengthOfMorse(morse);
