@@ -52,17 +52,17 @@ void delay_ms(unsigned short ms)
 ************************************************************************/
 void BMP085_Calibration(void)
 {
-	ac1 = bmp085ReadShort(0xAA);
-	ac2 = bmp085ReadShort(0xAC);
-	ac3 = bmp085ReadShort(0xAE);
+	ac1 = (signed short) bmp085ReadShort(0xAA);
+	ac2 = (signed short) bmp085ReadShort(0xAC);
+	ac3 = (signed short) bmp085ReadShort(0xAE);
 	ac4 = bmp085ReadShort(0xB0);
 	ac5 = bmp085ReadShort(0xB2);
 	ac6 = bmp085ReadShort(0xB4);
-	b1 = bmp085ReadShort(0xB6);
-	b2 = bmp085ReadShort(0xB8);
-	mb = bmp085ReadShort(0xBA);
-	mc = bmp085ReadShort(0xBC);
-	md = bmp085ReadShort(0xBE);
+	b1 = (signed short) bmp085ReadShort(0xB6);
+	b2 = (signed short) bmp085ReadShort(0xB8);
+	mb = (signed short) bmp085ReadShort(0xBA);
+	mc = (signed short) bmp085ReadShort(0xBC);
+	md = (signed short) bmp085ReadShort(0xBE);
 }
 
 /************************************************************************
@@ -98,7 +98,7 @@ void BMP085_Known_Calibration(void)
 				a 16-bit value.
 * Passed:       Unsigned char
 * Returned:     Short
-* Note:
+* Note:		Return value must be typecast to an signed short if reading a signed value!
 *
 * Date:				Author:				Comments:
 * 16 Mar 2011		Austin Schaller     Created
@@ -106,8 +106,8 @@ void BMP085_Known_Calibration(void)
 ************************************************************************/
 unsigned short bmp085ReadShort(unsigned char address)
 {
-	signed short msb, lsb;
-	signed short data;
+	unsigned short msb, lsb;
+	unsigned short data;
 	
 	StartI2C();
 	
@@ -156,7 +156,7 @@ long bmp085ReadTemp(void)
 	
 	delay_ms(10);		// Max time is 4.5ms
 	
-	return bmp085ReadShort(0xF6);
+	return (signed short) bmp085ReadShort(0xF6);
 }
 
 /************************************************************************
@@ -182,7 +182,7 @@ long bmp085ReadPressure(void)
 	
 	delay_ms(10);		// Max time is 4.5ms
 	
-	return bmp085ReadShort(0xF6);
+	return (signed short) bmp085ReadShort(0xF6);
 }
 
 /************************************************************************
