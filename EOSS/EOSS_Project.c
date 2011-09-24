@@ -16,7 +16,7 @@
 
 /** Defines ************************************************************/
 
-#define		MORSE_PIN						0
+#define		MORSE_PIN						LATAbits.LATA0
 #define		MS_PER_TICK						120
 #define		INTERRUPT_CLOCK_SETTING			64598		/*	(65536 - 64598) * 128E-6 = 120mS 
 															(Prescaler = 1:256)
@@ -134,7 +134,8 @@ void stepMorse()
 	
 	oneBit = getBitFromSchedule(txPos);
 	
-	// TODO: Transmit on MORSE_PIN
+	MORSE_PIN = oneBit;
+	printf((const far rom char*) "Data %d\r\n", oneBit);
 	
 	// If the slower transmit time is still enabled, decrement the timer.
 	if(slowTimeLeft > 0)
@@ -350,8 +351,9 @@ void main()
 	while(!OSCCONbits.IOFS);
 	TRISA = 0x00;
 	
-	// Initialize I�C
+	// Initialize I2C
 	// Intialize SPI
+	openTxUsart();
 	
 	while(1)
 	{
