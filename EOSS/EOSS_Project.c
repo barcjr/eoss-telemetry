@@ -94,7 +94,7 @@ unsigned char slowTimeLeft;		// Transmit 25 times slower (i.e. 3 second element 
 *
 * Purpose:		To look at the schedule and find the scheduled bit.
 * Passed:		0-255 depending on which bit you want to look at from the
-*				MorseCodeLib.
+*				schedule.
 * Returned:		0-1 depending on the state of the bit.
 * Note:			
 * Date:			Author:			Comments:
@@ -262,6 +262,7 @@ void openTxUsart(void)
 *
 ************************************************************************/
 
+//Sorta hacky, but oh well.
 #define INSERT_IN_MORSE(item) morse[array_index] = item;\
 	array_index++;
 
