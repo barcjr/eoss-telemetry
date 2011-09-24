@@ -182,7 +182,7 @@ long bmp085ReadPressure(void)
 	
 	delay_ms(10);		// Max time is 4.5ms
 	
-	return (signed short) bmp085ReadShort(0xF6);
+	return (signed long) bmp085ReadShort(0xF6);
 }
 
 /************************************************************************
