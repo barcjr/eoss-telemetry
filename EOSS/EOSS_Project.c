@@ -18,9 +18,7 @@
 
 #define		MORSE_PIN						LATAbits.LATA0
 #define		MS_PER_TICK						120
-#define		INTERRUPT_CLOCK_SETTING			5535		/*	(65536 - 64598) * 128E-6 = 120mS 
-															(Prescaler = 1:256)
-															Change the 64598 if you change the clock speed.	*/
+#define		INTERRUPT_CLOCK_SETTING			5536			// Change the 5536 if you change the clock speed.
 #define		MS_PER_CALLSIGN					10 * 60 * 1000	//10 minutes between callsigns, 60 seconds in a minute, 1000 milliseconds in a second.
 #define		TICKS_PER_CALLSIGN				5000			//MS_PER_CALLSIGN/MS_PER_TICK
 #define		PREFIX							16
@@ -80,16 +78,16 @@ rom const unsigned char MorseCodeLib[21][DATA_BYTES_PER_LINE + 1] =
 };
 
 // Timing stuff, all measured in ticks
-long timeSinceCallsign = TICKS_PER_CALLSIGN + 1;	// This is so that the PIC transmits the callsign as soon as 
-													// it boots.
+unsigned short timeSinceCallsign = TICKS_PER_CALLSIGN + 1;	// This is so that the PIC transmits the callsign as soon as 
+															// it boots.
 unsigned char nextMorseTime = 0;
 unsigned char nextReadingTime = 0;
 
 // Schedule for morse code procedure
 unsigned char schedule[32];
-unsigned char txPos;
-unsigned char writePos;
-unsigned char slowTimeLeft;		// Transmit 25 times slower (i.e. 3 second element length) if > 0. Measured in elements
+unsigned char txPos = 0;
+unsigned char writePos = 0;
+unsigned char slowTimeLeft = 0;	// Transmit 25 times slower (i.e. 3 second element length) if > 0. Measured in long elements
 
 /************************************************************************
 *
@@ -136,7 +134,8 @@ void stepMorse()
 	oneBit = getBitFromSchedule(txPos);
 	
 	MORSE_PIN = oneBit;
-	printf((const far rom char*) "Data %d\r\n", oneBit);
+	printf((const far rom char*) "Morse %d\r\n", oneBit);
+	printf((const far rom char*) "Byte: %d\r\n", schedule[txPos >> 3]);
 	
 	// If the slower transmit time is still enabled, decrement the timer.
 	if(slowTimeLeft > 0)
@@ -144,12 +143,13 @@ void stepMorse()
 		slowTimeLeft--;
 	}
 	
-	if(txPos & 0x07 == 0)
+	if((txPos & 0x07) == 0)
 	{
 		schedule[(txPos - 1) >> 3] = 0;		/*	Clear out the schedule behind you, so that bits from 256 ticks ago 
 												don't come back to haunt you.	*/
 	}
 	txPos++;
+	printf((const far rom char*) "Next TX: %d\r\n", nextMorseTime);
 }
 
 /************************************************************************
@@ -180,7 +180,10 @@ void scheduleMorse(unsigned char *morse)
 			*/
 			
 			txBit = (MorseCodeLib[index][i >> 3] >> (i & 0x07)) & 0x01;
+			//printf((const far rom char*) "Schedule: %d\r\n", txBit);
+			
 			schedule[writePos >> 3] |= txBit << (writePos & 0x07);
+			//printf((const far rom char*) "SByte: %d\r\n", schedule[writePos >> 3]);
 			writePos++;
 		}
 	}
@@ -221,14 +224,38 @@ unsigned char getLengthOfMorse(unsigned char *morse)
 * 16 Apr 2011	Nick O'Dell		Created
 *
 ************************************************************************/
-void txCallSign()
+void txCallsign()
 {
-	unsigned char morse[] = {18, 19, 20, 21, TERMINATOR};
+	unsigned char morse[] = {18, 19, 20, TERMINATOR};
 	unsigned char length = getLengthOfMorse(&morse[0]);
 	
+	printf((const far rom char*) "txCallsign\r\n");
+
 	slowTimeLeft = length;
 	scheduleMorse(&morse[0]);
+	//scheduleDump();
 }
+
+/************************************************************************
+*
+* Purpose:		Dumps the schedule to printf
+* Passed:		None
+* Returned:		None
+*
+* Date:			Author:			Comments:
+* 16 Apr 2011	Nick O'Dell		Created
+*
+************************************************************************/
+void scheduleDump()
+{
+	int i;
+	for(i = 0; i < 32; i++)
+	{
+		printf((const far rom char*) "%d: %d\r\n", i, schedule[i]);
+	}	
+}
+
+
 
 /************************************************************************
 *
@@ -366,13 +393,10 @@ void onInterrupt(void)
 	if(INTCONbits.TMR0IF) {
 		WriteTimer0(INTERRUPT_CLOCK_SETTING);
 		timeSinceCallsign++;
-		INTCONbits.TMR0IF = 0;
-		printf((const far rom char*) "INTERRUPT\r\n");
-		MORSE_PIN = ~MORSE_PIN;
-		if(timeSinceCallsign == 20) {
-			printf((const far rom char*) "20-INTERRUPT\r\n");
-			timeSinceCallsign = 0;
-		}
+		INTCONbits.TMR0IF = 0; // Clear the interrupt
+		
+		//printf((const far rom char*) "INTERRUPT\r\n");
+		//MORSE_PIN = ~MORSE_PIN;
 	}
 }
 
@@ -386,6 +410,7 @@ void main()
 	double temporary = 0;
 	unsigned char *morse;
 	unsigned char length;
+	unsigned char firstRun = TRUE;
 	
 	OSCCONbits.IRCF0=1; 
 	OSCCONbits.IRCF1=1;
@@ -400,7 +425,13 @@ void main()
 	// Initialize Timer Interrupt
 	activateInterrupt();					// Set up the timer
 	WriteTimer0(INTERRUPT_CLOCK_SETTING);	// Set the timer
-	timeSinceCallsign = 0;
+	timeSinceCallsign = TICKS_PER_CALLSIGN + 1;
+	
+	// Erase Schedule
+	for(i = 0; i < 32; i++)
+	{
+		schedule[i] = 0;
+	}	
 	
 	printf((const far rom char*) "\r\n=========================\r\n");
 	printf((const far rom char*) "=========RESTART=========\r\n");
@@ -410,20 +441,25 @@ void main()
 	
 	while(1)
 	{
+		if((timeSinceCallsign & 0x0F) == 0)
+		{
+			//printf((const far rom char*) "timeSinceCallsign: %d\r\n", timeSinceCallsign);
+		}
 		//printf((const far rom char*) "Loop\r\n");
 		if(txPos == writePos)
 		{
+			printf((const far rom char*) "Getting more morse\r\n");
 			// Temperature & Pressure Measurements
 			//bmp085Convert(&temperature, &pressure);
-			
+			/*
 			// Altitude Measurement
 			temporary = (double) pressure / 101325;
 			temporary = 1 - pow(temporary, 0.19029);
 			
 			// Will only work if temporary is positive.
 			altitude = floor((44330 * temporary) + 0.5);
-			
-			morse = formatAltitude(altitude);
+			*/
+			morse = formatAltitude(42);//altitude);
 			length = getLengthOfMorse(morse);
 			
 			if(timeSinceCallsign + length > TICKS_PER_CALLSIGN)
@@ -433,8 +469,15 @@ void main()
 				nextMorseTime = nextMorseTime - (timeSinceCallsign & 0xFF);
 				timeSinceCallsign = 0;
 				
+				if(firstRun)
+				{
+					nextReadingTime = 0;
+					nextMorseTime = 0;
+					firstRun = FALSE;
+				}
+				
 				// Transmit call sign
-				txCallSign();
+				txCallsign();
 			}
 			else
 			{
@@ -442,13 +485,15 @@ void main()
 			}
 		}
 		
-		if(timeSinceCallsign & 0xFF == nextMorseTime)
+		if((timeSinceCallsign & 0xFF) == nextMorseTime)
 		{
+			//printf((const far rom char*) "TXing morse\r\n");
 			stepMorse();
 		}
 		
-		if(timeSinceCallsign & 0xFF == nextReadingTime)
+		if((timeSinceCallsign & 0xFF) == nextReadingTime)
 		{
+			printf((const far rom char*) "Getting a reading\r\n");
 			//bmp085Convert(&temperature, &pressure);
 			// Store temperature, pressure in I2C Memory
 		}

@@ -9,5 +9,6 @@ void txCallSign();
 void openTxUsart();
 unsigned char *formatAltitude(signed short alt);
 void txUsart(const rom char *dataString);
+void scheduleDump();
 
 #endif
