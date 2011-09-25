@@ -18,10 +18,11 @@
 
 #define		MORSE_PIN						LATAbits.LATA0
 #define		MS_PER_TICK						120
-#define		INTERRUPT_CLOCK_SETTING			64598		/*	(65536 - 64598) * 128E-6 = 120mS 
+#define		INTERRUPT_CLOCK_SETTING			5535		/*	(65536 - 64598) * 128E-6 = 120mS 
 															(Prescaler = 1:256)
 															Change the 64598 if you change the clock speed.	*/
-#define		TICKS_PER_CALLSIGN				5000		//(10 * 60 * 1000)/MS_PER_TICK
+#define		MS_PER_CALLSIGN					10 * 60 * 1000	//10 minutes between callsigns, 60 seconds in a minute, 1000 milliseconds in a second.
+#define		TICKS_PER_CALLSIGN				5000			//MS_PER_CALLSIGN/MS_PER_TICK
 #define		PREFIX							16
 #define		SUFFIX							17
 #define		TERMINATOR						0xFF
@@ -251,6 +252,8 @@ void openTxUsart(void)
 	TXSTAbits.TXEN = 1;		// Enable transmission 
 }
 
+
+
 /************************************************************************
 *
 * Purpose:		Changes altitude into the morse library sequence 
@@ -335,6 +338,44 @@ void txUsart(const rom char *data)
 	}
 }
 
+/************************************************************************
+*
+* Purpose:		Set up timer0
+* Passed:		None
+* Returned:		None
+*
+************************************************************************/
+void activateInterrupt(void)
+{
+	OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_4);
+	INTCONbits.GIEH = 1; //enable interrupts
+}
+
+/************************************************************************
+*
+* Purpose:		Called during interrupt; resets timer and increments 
+* 				timeSinceCallsign.
+* Passed:		None
+* Returned:		None
+*
+************************************************************************/
+#pragma code onInterrupt = 0x08
+#pragma interrupt onInterrupt
+void onInterrupt(void)
+{
+	if(INTCONbits.TMR0IF) {
+		WriteTimer0(INTERRUPT_CLOCK_SETTING);
+		timeSinceCallsign++;
+		INTCONbits.TMR0IF = 0;
+		printf((const far rom char*) "INTERRUPT\r\n");
+		MORSE_PIN = ~MORSE_PIN;
+		if(timeSinceCallsign == 20) {
+			printf((const far rom char*) "20-INTERRUPT\r\n");
+			timeSinceCallsign = 0;
+		}
+	}
+}
+
 /** Main Loop **********************************************************/
 void main()
 {
@@ -356,8 +397,20 @@ void main()
 	// Intialize SPI
 	openTxUsart();
 	
+	// Initialize Timer Interrupt
+	activateInterrupt();					// Set up the timer
+	WriteTimer0(INTERRUPT_CLOCK_SETTING);	// Set the timer
+	timeSinceCallsign = 0;
+	
+	printf((const far rom char*) "\r\n=========================\r\n");
+	printf((const far rom char*) "=========RESTART=========\r\n");
+	printf((const far rom char*) "=========RESTART=========\r\n");
+	printf((const far rom char*) "=========RESTART=========\r\n");
+	printf((const far rom char*) "=========================\r\n");
+	
 	while(1)
 	{
+		//printf((const far rom char*) "Loop\r\n");
 		if(txPos == writePos)
 		{
 			// Temperature & Pressure Measurements
@@ -397,7 +450,7 @@ void main()
 		if(timeSinceCallsign & 0xFF == nextReadingTime)
 		{
 			//bmp085Convert(&temperature, &pressure);
-			// Store temperature, pressure in I�C Memory
+			// Store temperature, pressure in I2C Memory
 		}
 	}
 }
