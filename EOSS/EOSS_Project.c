@@ -77,6 +77,8 @@ rom const unsigned char MorseCodeLib[21][DATA_BYTES_PER_LINE + 1] =
 	{0x17, 0x57, 0x01, 0x00, 0x14},  // 'W0DK/B'
 };
 
+unsigned char blockMorse[7];
+
 // Timing stuff, all measured in ticks
 unsigned short timeSinceCallsign = TICKS_PER_CALLSIGN + 1;	// This is so that the PIC transmits the callsign as soon as 
 															// it boots.
@@ -284,8 +286,8 @@ void openTxUsart(void)
 /************************************************************************
 *
 * Purpose:		Changes altitude into the morse library sequence 
-* Passed:		Altitude
-* Returned:		Pointer to array
+* Passed:		Altitude, Pointer to array
+* Returned:		None
 *
 * Date:			Author:			Comments:
 * 16 Apr 2011	Nick O'Dell		Created
@@ -293,21 +295,17 @@ void openTxUsart(void)
 ************************************************************************/
 
 //Sorta hacky, but oh well.
-#define INSERT_IN_MORSE(item) morse[array_index] = item;\
-	array_index++;
+#define INSERT_IN_MORSE(item) *morsePointer = item;\
+	morsePointer++;
 
-unsigned char *formatAltitude(signed short alt)
+void formatAltitude(signed short alt, unsigned char *morsePointer)
 {
 	signed char i;
-	unsigned char morse[7];
-	unsigned char leading_zero;
+	unsigned char leading_zero = TRUE;
 	unsigned char array_index = 0;
-	unsigned char *pointer;
 	unsigned char number;
 	
 	INSERT_IN_MORSE(PREFIX)
-	
-	leading_zero = TRUE;
 	
 	// This counts down from 3 to 0 because the most significant digit comes first.
 	for(i = 3; i >= 0; i--)
@@ -341,8 +339,6 @@ unsigned char *formatAltitude(signed short alt)
 	
 	INSERT_IN_MORSE(TERMINATOR);		// Terminator
 	
-	pointer = &morse[0];
-	return pointer;
 }
 
 /************************************************************************
@@ -408,7 +404,6 @@ void main()
 	long pressure = 0;
 	signed short altitude = 0;
 	double temporary = 0;
-	unsigned char *morse;
 	unsigned char length;
 	unsigned char firstRun = TRUE;
 	
@@ -431,7 +426,7 @@ void main()
 	for(i = 0; i < 32; i++)
 	{
 		schedule[i] = 0;
-	}	
+	}
 	
 	printf((const far rom char*) "\r\n=========================\r\n");
 	printf((const far rom char*) "=========RESTART=========\r\n");
@@ -459,8 +454,8 @@ void main()
 			// Will only work if temporary is positive.
 			altitude = floor((44330 * temporary) + 0.5);
 			*/
-			morse = formatAltitude(42);//altitude);
-			length = getLengthOfMorse(morse);
+			formatAltitude(42, &blockMorse[0]);//altitude);
+			length = getLengthOfMorse(&blockMorse[0]);
 			
 			if(timeSinceCallsign + length > TICKS_PER_CALLSIGN)
 			{
@@ -481,7 +476,7 @@ void main()
 			}
 			else
 			{
-				scheduleMorse(morse);
+				scheduleMorse(&blockMorse[0]);
 			}
 		}
 		

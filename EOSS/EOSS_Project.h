@@ -5,9 +5,9 @@ unsigned char getBitFromSchedule(unsigned char bitPos);
 void stepMorse();
 unsigned char getLengthOfMorse(unsigned char *morse);
 void scheduleMorse(unsigned char *morse);
-void txCallSign();
+void txCallsign();
 void openTxUsart();
-unsigned char *formatAltitude(signed short alt);
+void formatAltitude(signed short alt, unsigned char *morsePointer);
 void txUsart(const rom char *dataString);
 void scheduleDump();
 
