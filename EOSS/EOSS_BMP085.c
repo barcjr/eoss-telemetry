@@ -49,8 +49,8 @@ void main()
 {
 	long temperature = 0;
 	long pressure = 0;
-	//long altitude = 0;
-	//double temp = 0;
+	long altitude = 0;
+	double temp = 0;
 
 	OSCCON = 0x70;		// 8 MHz OSC
 	
@@ -86,10 +86,10 @@ void main()
 		printf((const far rom char*)"Pressure: %ld Pa\n\r\n", pressure);
 		
 		// For fun, lets convert to altitude
-		/*temp = (double) pressure/101325;
+		temp = (double) pressure/101325;
 		temp = 1-pow(temp, 0.19029);
-		altitude = round(44330*temp);
-		printf("Altitude: %ldm\n\n", altitude);*/
+		altitude = floor(44330*temp);
+		printf((const far rom char*)"Altitude: %ldm\r\n", altitude);
 		
 		delay_ms(1000);
 	}
