@@ -88,7 +88,7 @@ unsigned char nextReadingTime = 0;
 // Schedule for morse code procedure
 unsigned char schedule[32];
 unsigned char txPos = 0;
-unsigned char writePos = 0;
+unsigned char writePos = 1;
 unsigned char slowTimeLeft = 0;	// Transmit 25 times slower (i.e. 3 second element length) if > 0. Measured in long elements
 
 /************************************************************************
@@ -136,8 +136,10 @@ void stepMorse()
 	oneBit = getBitFromSchedule(txPos);
 	
 	MORSE_PIN = oneBit;
-	printf((const far rom char*) "Morse %d\r\n", oneBit);
-	printf((const far rom char*) "Byte: %d\r\n", schedule[txPos >> 3]);
+	//printf((const far rom char*) "Morse %d\r\n", oneBit);
+	//printf((const far rom char*) "txPos: %d\r\n", txPos);
+	//printf((const far rom char*) "writePos: %d\r\n", writePos);
+	//printf((const far rom char*) "Byte: %d\r\n", schedule[txPos >> 3]);
 	
 	// If the slower transmit time is still enabled, decrement the timer.
 	if(slowTimeLeft > 0)
@@ -151,7 +153,7 @@ void stepMorse()
 												don't come back to haunt you.	*/
 	}
 	txPos++;
-	printf((const far rom char*) "Next TX: %d\r\n", nextMorseTime);
+	//printf((const far rom char*) "Next TX: %d\r\n", nextMorseTime);
 }
 
 /************************************************************************
@@ -173,6 +175,8 @@ void scheduleMorse(unsigned char *morse)
 	while((index = *morse++) != TERMINATOR)
 	{
 		unsigned char length = MorseCodeLib[index][DATA_BYTES_PER_LINE];
+		//printf((const far rom char*) "MorseCodeLib: %d", index);
+		//printf((const far rom char*) "\r\n");
 		for(i = 0; i < length; i++)
 		{
 			/*
@@ -182,12 +186,13 @@ void scheduleMorse(unsigned char *morse)
 			*/
 			
 			txBit = (MorseCodeLib[index][i >> 3] >> (i & 0x07)) & 0x01;
-			//printf((const far rom char*) "Schedule: %d\r\n", txBit);
+			printf((const far rom char*) "%d", txBit);
 			
 			schedule[writePos >> 3] |= txBit << (writePos & 0x07);
 			//printf((const far rom char*) "SByte: %d\r\n", schedule[writePos >> 3]);
 			writePos++;
 		}
+		printf((const far rom char*) "\r\n");
 	}
 }
 
@@ -231,7 +236,7 @@ void txCallsign()
 	unsigned char morse[] = {18, 19, 20, TERMINATOR};
 	unsigned char length = getLengthOfMorse(&morse[0]);
 	
-	printf((const far rom char*) "txCallsign\r\n");
+	//printf((const far rom char*) "txCallsign\r\n");
 
 	slowTimeLeft = length;
 	scheduleMorse(&morse[0]);
@@ -305,6 +310,8 @@ void formatAltitude(signed short alt, unsigned char *morsePointer)
 	unsigned char array_index = 0;
 	unsigned char number;
 	
+	//printf((const far rom char*) "formatAltitude start\r\n");
+	
 	INSERT_IN_MORSE(PREFIX)
 	
 	// This counts down from 3 to 0 because the most significant digit comes first.
@@ -339,6 +346,7 @@ void formatAltitude(signed short alt, unsigned char *morsePointer)
 	
 	INSERT_IN_MORSE(TERMINATOR);		// Terminator
 	
+	//printf((const far rom char*) "formatAltitude end\r\n");
 }
 
 /************************************************************************
@@ -396,6 +404,28 @@ void onInterrupt(void)
 	}
 }
 
+/************************************************************************
+*
+* Purpose:		Sometimes measuring altitude takes more than 120 ms.
+* Passed:		None
+* Returned:		None
+*
+************************************************************************/
+unsigned char checkNear(unsigned char haystack, unsigned char needle)
+{
+	unsigned char i;
+	// Try decrementing needle a few times and checking against haystack
+	for(i = 0; i < 32; i++)
+	{
+		if(haystack == needle)
+		{
+			return TRUE;
+		}
+		needle--;
+	}
+	return FALSE;
+}
+
 /** Main Loop **********************************************************/
 void main()
 {
@@ -417,10 +447,6 @@ void main()
 	// Intialize SPI
 	openTxUsart();
 	
-	// Initialize Timer Interrupt
-	activateInterrupt();					// Set up the timer
-	WriteTimer0(INTERRUPT_CLOCK_SETTING);	// Set the timer
-	timeSinceCallsign = TICKS_PER_CALLSIGN + 1;
 	
 	// Erase Schedule
 	for(i = 0; i < 32; i++)
@@ -434,6 +460,11 @@ void main()
 	printf((const far rom char*) "=========RESTART=========\r\n");
 	printf((const far rom char*) "=========================\r\n");
 	
+	// Initialize Timer Interrupt
+	activateInterrupt();					// Set up the timer
+	WriteTimer0(INTERRUPT_CLOCK_SETTING);	// Set the timer
+	timeSinceCallsign = TICKS_PER_CALLSIGN + 1;
+	
 	while(1)
 	{
 		if((timeSinceCallsign & 0x0F) == 0)
@@ -441,6 +472,9 @@ void main()
 			//printf((const far rom char*) "timeSinceCallsign: %d\r\n", timeSinceCallsign);
 		}
 		//printf((const far rom char*) "Loop\r\n");
+		//printf((const far rom char*) "txPos: %d\r\n", txPos);
+		//printf((const far rom char*) "writePos: %d\r\n", writePos);
+		
 		if(txPos == writePos)
 		{
 			printf((const far rom char*) "Getting more morse\r\n");
@@ -454,10 +488,10 @@ void main()
 			// Will only work if temporary is positive.
 			altitude = floor((44330 * temporary) + 0.5);
 			*/
-			formatAltitude(42, &blockMorse[0]);//altitude);
+			formatAltitude(43, &blockMorse[0]);//altitude);
 			length = getLengthOfMorse(&blockMorse[0]);
 			
-			if(timeSinceCallsign + length > TICKS_PER_CALLSIGN)
+			if((timeSinceCallsign + length) > TICKS_PER_CALLSIGN)
 			{
 				// Make sure that we set the timing variables correctly
 				nextReadingTime = nextReadingTime - (timeSinceCallsign & 0xFF);
@@ -473,6 +507,7 @@ void main()
 				
 				// Transmit call sign
 				txCallsign();
+				printf((const far rom char*) "slowTimeLeft: %d\r\n", slowTimeLeft);
 			}
 			else
 			{
@@ -480,7 +515,7 @@ void main()
 			}
 		}
 		
-		if((timeSinceCallsign & 0xFF) == nextMorseTime)
+		if(checkNear(nextMorseTime, timeSinceCallsign & 0xFF))
 		{
 			//printf((const far rom char*) "TXing morse\r\n");
 			stepMorse();
@@ -488,7 +523,7 @@ void main()
 		
 		if((timeSinceCallsign & 0xFF) == nextReadingTime)
 		{
-			printf((const far rom char*) "Getting a reading\r\n");
+			//printf((const far rom char*) "Getting a reading\r\n");
 			//bmp085Convert(&temperature, &pressure);
 			// Store temperature, pressure in I2C Memory
 		}
