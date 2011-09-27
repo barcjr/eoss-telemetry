@@ -242,7 +242,4 @@ void bmp085Convert(long *temperature, long *pressure)
 	x2 = x2 / SHIFT(16);
 	
 	*pressure = p + (x1 + x2 + 3791) / SHIFT(4);
-	
-	// TODO: Remove this and see what happens.
-	delay_ms(10);
 }
