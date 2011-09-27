@@ -82,13 +82,13 @@ unsigned char blockMorse[7];
 // Timing stuff, all measured in ticks
 unsigned short timeSinceCallsign = TICKS_PER_CALLSIGN + 1;	// This is so that the PIC transmits the callsign as soon as 
 															// it boots.
-unsigned char nextMorseTime = 0;
 unsigned char nextReadingTime = 0;
 
 // Schedule for morse code procedure
 unsigned char schedule[32];
 unsigned char txPos = 0;
 unsigned char writePos = 1;
+unsigned char skippy = 0;		// Used in conjunction with slowTimeLeft to skip morse transmission sometimes.
 unsigned char slowTimeLeft = 0;	// Transmit 25 times slower (i.e. 3 second element length) if > 0. Measured in long elements
 
 /************************************************************************
@@ -128,10 +128,20 @@ unsigned char getBitFromSchedule(unsigned char bitPos)
 void stepMorse()
 {
 	unsigned char oneBit;
+	if(slowTimeLeft > 0)
+	{
+		if(skippy == 25)
+		{
+			// Don't skip this time.
+			skippy = 0;
+			slowTimeLeft--;
+		} else {
+			// Skip!
+			skippy++;
+			return;
+		}
+	}
 	
-	nextMorseTime = nextMorseTime + (slowTimeLeft == 0 ? 1 : 25);		// Move the trigger for the timer.
-																		// Move it 25 times further if 
-																		// transmitting callsign.
 	
 	oneBit = getBitFromSchedule(txPos);
 	
@@ -141,11 +151,6 @@ void stepMorse()
 	//printf((const far rom char*) "writePos: %d\r\n", writePos);
 	//printf((const far rom char*) "Byte: %d\r\n", schedule[txPos >> 3]);
 	
-	// If the slower transmit time is still enabled, decrement the timer.
-	if(slowTimeLeft > 0)
-	{
-		slowTimeLeft--;
-	}
 	
 	if((txPos & 0x07) == 0)
 	{
@@ -186,13 +191,13 @@ void scheduleMorse(unsigned char *morse)
 			*/
 			
 			txBit = (MorseCodeLib[index][i >> 3] >> (i & 0x07)) & 0x01;
-			printf((const far rom char*) "%d", txBit);
+			//printf((const far rom char*) "%d", txBit);
 			
 			schedule[writePos >> 3] |= txBit << (writePos & 0x07);
 			//printf((const far rom char*) "SByte: %d\r\n", schedule[writePos >> 3]);
 			writePos++;
 		}
-		printf((const far rom char*) "\r\n");
+		//printf((const far rom char*) "\r\n");
 	}
 }
 
@@ -306,7 +311,7 @@ void openTxUsart(void)
 void formatAltitude(signed short alt, unsigned char *morsePointer)
 {
 	signed char i;
-	unsigned char leading_zero = TRUE;
+	unsigned char leading_zero = FALSE;
 	unsigned char array_index = 0;
 	unsigned char number;
 	
@@ -398,6 +403,7 @@ void onInterrupt(void)
 		WriteTimer0(INTERRUPT_CLOCK_SETTING);
 		timeSinceCallsign++;
 		INTCONbits.TMR0IF = 0; // Clear the interrupt
+		stepMorse();
 		
 		//printf((const far rom char*) "INTERRUPT\r\n");
 		//MORSE_PIN = ~MORSE_PIN;
@@ -406,24 +412,32 @@ void onInterrupt(void)
 
 /************************************************************************
 *
-* Purpose:		Sometimes measuring altitude takes more than 120 ms.
+* Purpose:		Checks whether one and two are within maxDist of each other.
 * Passed:		None
 * Returned:		None
 *
 ************************************************************************/
-unsigned char checkNear(unsigned char haystack, unsigned char needle)
+unsigned char checkNear(unsigned char one, unsigned char two, unsigned char maxDist)
 {
-	unsigned char i;
-	// Try decrementing needle a few times and checking against haystack
-	for(i = 0; i < 32; i++)
+	signed short result;
+	signed short maxDistTemp = maxDist;
+	
+	result = one;
+	result -= two;
+	
+	//printf((const far rom char*) "result: %d\r\n", result);
+	if(result < 0)
 	{
-		if(haystack == needle)
-		{
-			return TRUE;
-		}
-		needle--;
+		result = -result;
 	}
-	return FALSE;
+	if(result <= maxDistTemp)
+	{
+		return TRUE;
+	}
+	else
+	{
+		return FALSE;
+	}
 }
 
 /** Main Loop **********************************************************/
@@ -437,7 +451,7 @@ void main()
 	unsigned char length;
 	unsigned char firstRun = TRUE;
 	
-	OSCCONbits.IRCF0=1; 
+	OSCCONbits.IRCF0=1;
 	OSCCONbits.IRCF1=1;
 	OSCCONbits.IRCF2=1;
 	while(!OSCCONbits.IOFS);
@@ -475,8 +489,10 @@ void main()
 		//printf((const far rom char*) "txPos: %d\r\n", txPos);
 		//printf((const far rom char*) "writePos: %d\r\n", writePos);
 		
-		if(txPos == writePos)
+		if(checkNear(txPos, writePos, \
+			slowTimeLeft ? 1 : 25)) // Make sure you always have three seconds of morse left.
 		{
+			
 			printf((const far rom char*) "Getting more morse\r\n");
 			// Temperature & Pressure Measurements
 			//bmp085Convert(&temperature, &pressure);
@@ -491,17 +507,15 @@ void main()
 			formatAltitude(43, &blockMorse[0]);//altitude);
 			length = getLengthOfMorse(&blockMorse[0]);
 			
-			if((timeSinceCallsign + length) > TICKS_PER_CALLSIGN)
+			if((timeSinceCallsign + length + 25) > TICKS_PER_CALLSIGN)
 			{
 				// Make sure that we set the timing variables correctly
 				nextReadingTime = nextReadingTime - (timeSinceCallsign & 0xFF);
-				nextMorseTime = nextMorseTime - (timeSinceCallsign & 0xFF);
 				timeSinceCallsign = 0;
 				
 				if(firstRun)
 				{
 					nextReadingTime = 0;
-					nextMorseTime = 0;
 					firstRun = FALSE;
 				}
 				
@@ -513,12 +527,6 @@ void main()
 			{
 				scheduleMorse(&blockMorse[0]);
 			}
-		}
-		
-		if(checkNear(nextMorseTime, timeSinceCallsign & 0xFF))
-		{
-			//printf((const far rom char*) "TXing morse\r\n");
-			stepMorse();
 		}
 		
 		if((timeSinceCallsign & 0xFF) == nextReadingTime)
