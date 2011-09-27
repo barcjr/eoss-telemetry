@@ -41,7 +41,7 @@ void openTxUsart(void)
 	TXSTAbits.SYNC = 0;		// Asynchronous mode
 	RCSTAbits.SPEN = 1;		// Serial port enabled
 	TXSTAbits.BRGH = 0;		// Low Speed
-	TXSTAbits.TXEN = 1;		// Enable transmission 
+	TXSTAbits.TXEN = 1;		// Enable transmission
 }
 
 
