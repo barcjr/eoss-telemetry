@@ -17,6 +17,8 @@
 /** Defines ************************************************************/
 
 #define		MORSE_PIN						LATAbits.LATA0
+#define		SPEAKER_PIN						LATAbits.LATA1
+
 #define		MS_PER_TICK						120
 #define		INTERRUPT_CLOCK_SETTING			5536			// Change the 5536 if you change the clock speed.
 #define		MS_PER_CALLSIGN					10 * 60 * 1000	//10 minutes between callsigns, 60 seconds in a minute, 1000 milliseconds in a second.
@@ -25,6 +27,9 @@
 #define		SUFFIX							17
 #define		TERMINATOR						0xFF
 #define		DATA_BYTES_PER_LINE				4
+
+#define		CALLSIGN_SLOW_FACTOR			25
+#define		ALTITUDE_SLOW_FACTOR			2
 
 #define		FOSC		8000000
 #define		BAUD 		9600
@@ -87,7 +92,7 @@ unsigned char nextReadingTime = 0;
 // Schedule for morse code procedure
 unsigned char schedule[32];
 unsigned char txPos = 0;
-unsigned char writePos = 1;
+unsigned char writePos = 0;
 unsigned char skippy = 0;		// Used in conjunction with slowTimeLeft to skip morse transmission sometimes.
 unsigned char slowTimeLeft = 0;	// Transmit 25 times slower (i.e. 3 second element length) if > 0. Measured in long elements
 
@@ -130,11 +135,24 @@ void stepMorse()
 	unsigned char oneBit;
 	if(slowTimeLeft > 0)
 	{
-		if(skippy == 25)
+		if(skippy == CALLSIGN_SLOW_FACTOR - 1)
 		{
 			// Don't skip this time.
 			skippy = 0;
 			slowTimeLeft--;
+		} else {
+			// Skip!
+			skippy++;
+			return;
+		}
+	}
+	else
+	{
+		if(skippy == ALTITUDE_SLOW_FACTOR - 1)
+		{
+			// Don't skip this time.
+			skippy = 0;
+			//slowTimeLeft--;
 		} else {
 			// Skip!
 			skippy++;
@@ -311,7 +329,7 @@ void openTxUsart(void)
 void formatAltitude(signed short alt, unsigned char *morsePointer)
 {
 	signed char i;
-	unsigned char leading_zero = FALSE;
+	unsigned char leading_zero = TRUE;
 	unsigned char array_index = 0;
 	unsigned char number;
 	
@@ -443,7 +461,7 @@ unsigned char checkNear(unsigned char one, unsigned char two, unsigned char maxD
 /** Main Loop **********************************************************/
 void main()
 {
-	int i;
+	int i, j;
 	long temperature = 0;
 	long pressure = 0;
 	signed short altitude = 0;
@@ -458,6 +476,11 @@ void main()
 	TRISA = 0x00;
 	
 	// Initialize I2C
+	OpenI2C(MASTER, SLEW_OFF);
+	
+	// Initialize BMP085
+	BMP085_Calibration();
+	
 	// Intialize SPI
 	openTxUsart();
 	
@@ -477,7 +500,7 @@ void main()
 	// Initialize Timer Interrupt
 	activateInterrupt();					// Set up the timer
 	WriteTimer0(INTERRUPT_CLOCK_SETTING);	// Set the timer
-	timeSinceCallsign = TICKS_PER_CALLSIGN + 1;
+	timeSinceCallsign = 0; //TICKS_PER_CALLSIGN + 1;
 	
 	while(1)
 	{
@@ -490,21 +513,22 @@ void main()
 		//printf((const far rom char*) "writePos: %d\r\n", writePos);
 		
 		if(checkNear(txPos, writePos, \
-			slowTimeLeft ? 1 : 25)) // Make sure you always have three seconds of morse left.
+			slowTimeLeft ? 1 : 2)) // Make sure you always have three seconds of morse left.
 		{
 			
 			printf((const far rom char*) "Getting more morse\r\n");
 			// Temperature & Pressure Measurements
-			//bmp085Convert(&temperature, &pressure);
-			/*
+			bmp085Convert(&temperature, &pressure);
+			
 			// Altitude Measurement
 			temporary = (double) pressure / 101325;
 			temporary = 1 - pow(temporary, 0.19029);
 			
 			// Will only work if temporary is positive.
 			altitude = floor((44330 * temporary) + 0.5);
-			*/
-			formatAltitude(43, &blockMorse[0]);//altitude);
+			printf((const far rom char*) "altitude: %d\r\n", altitude);
+			
+			formatAltitude(altitude, &blockMorse[0]);
 			length = getLengthOfMorse(&blockMorse[0]);
 			
 			if((timeSinceCallsign + length + 25) > TICKS_PER_CALLSIGN)
@@ -534,6 +558,15 @@ void main()
 			//printf((const far rom char*) "Getting a reading\r\n");
 			//bmp085Convert(&temperature, &pressure);
 			// Store temperature, pressure in I2C Memory
+		}
+		
+		if(MORSE_PIN)
+		{
+			for(j = 100; j >= 0 && MORSE_PIN; j--)
+			{
+				SPEAKER_PIN = ~SPEAKER_PIN;
+				Delay100TCYx(40);
+			}
 		}
 	}
 }
