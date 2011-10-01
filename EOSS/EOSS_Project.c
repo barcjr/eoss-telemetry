@@ -196,7 +196,7 @@ void scheduleMorse(unsigned char *morse)
 	while((index = *morse++) != TERMINATOR)
 	{
 		unsigned char length = MorseCodeLib[index][DATA_BYTES_PER_LINE];
-		printf((const far rom char*) "MorseCodeLib: %d", index);
+		printf((const far rom char*) "MorseCodeLib: %d\r\n", index);
 		//printf((const far rom char*) "\r\n");
 		for(i = 0; i < length; i++)
 		{
@@ -328,7 +328,7 @@ void formatAltitude(unsigned short alt, unsigned char *morsePointer)
 	signed char i;
 	unsigned char leading_zero = TRUE;
 	unsigned char array_index = 0;
-	unsigned char number;
+	unsigned short number;
 	
 	//printf((const far rom char*) "formatAltitude start\r\n");
 	
@@ -337,11 +337,6 @@ void formatAltitude(unsigned short alt, unsigned char *morsePointer)
 	// This counts down from 4 to 0 because the most significant digit comes first.
 	for(i = 4; i >= 0; i--)
 	{
-		/*
-		Multiply i by 4, then right-shift alt that amount
-		and OR it. This selects 4 bits at a time, allowing
-		us to send hexadecimal.
-		*/
 		number = (unsigned short) alt / pow(10, i);
 		number = number % 10;
 		
