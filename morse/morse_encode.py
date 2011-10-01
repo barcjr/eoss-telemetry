@@ -72,7 +72,7 @@ def format_bytes(char, morse_list):
     if out_file:
         out_file.write(s + "\n")
 
-for char in list("0123456789ABCDEF") + ["ALT ", "H M ", CALLSIGN]:
+for char in list("0123456789") + ["ALT ", " M ", CALLSIGN]:
     result = []
     if len(char) > 1:
         for c in char:
