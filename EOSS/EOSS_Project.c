@@ -29,7 +29,7 @@
 #define		DATA_BYTES_PER_LINE				4
 
 #define		CALLSIGN_SLOW_FACTOR			25
-#define		ALTITUDE_SLOW_FACTOR			2
+#define		ALTITUDE_SLOW_FACTOR			1
 
 #define		FOSC		8000000
 #define		BAUD 		9600
@@ -82,7 +82,7 @@ rom const unsigned char MorseCodeLib[21][DATA_BYTES_PER_LINE + 1] =
 	{0x17, 0x57, 0x01, 0x00, 0x14},  // 'W0DK/B'
 };
 
-unsigned char blockMorse[7];
+unsigned char blockMorse[8];
 
 // Timing stuff, all measured in ticks
 unsigned short timeSinceCallsign = TICKS_PER_CALLSIGN + 1;	// This is so that the PIC transmits the callsign as soon as
@@ -135,10 +135,10 @@ void stepMorse()
 	unsigned char oneBit;
 	if(slowTimeLeft > 0)
 	{
-		if(skippy == CALLSIGN_SLOW_FACTOR - 1)
+		if(skippy == CALLSIGN_SLOW_FACTOR)
 		{
 			// Don't skip this time.
-			skippy = 0;
+			skippy = 1;
 			slowTimeLeft--;
 		} else {
 			// Skip!
@@ -148,11 +148,10 @@ void stepMorse()
 	}
 	else
 	{
-		if(skippy == ALTITUDE_SLOW_FACTOR - 1)
+		if(skippy == ALTITUDE_SLOW_FACTOR)
 		{
 			// Don't skip this time.
-			skippy = 0;
-			//slowTimeLeft--;
+			skippy = 1;
 		} else {
 			// Skip!
 			skippy++;
@@ -176,7 +175,6 @@ void stepMorse()
 												don't come back to haunt you.	*/
 	}
 	txPos++;
-	//printf((const far rom char*) "Next TX: %d\r\n", nextMorseTime);
 }
 
 /************************************************************************
@@ -198,7 +196,7 @@ void scheduleMorse(unsigned char *morse)
 	while((index = *morse++) != TERMINATOR)
 	{
 		unsigned char length = MorseCodeLib[index][DATA_BYTES_PER_LINE];
-		//printf((const far rom char*) "MorseCodeLib: %d", index);
+		printf((const far rom char*) "MorseCodeLib: %d", index);
 		//printf((const far rom char*) "\r\n");
 		for(i = 0; i < length; i++)
 		{
@@ -323,10 +321,9 @@ void openTxUsart(void)
 ************************************************************************/
 
 //Sorta hacky, but oh well.
-#define INSERT_IN_MORSE(item) *morsePointer = item;\
-	morsePointer++;
+#define INSERT_IN_MORSE(item) *morsePointer++ = (item);
 
-void formatAltitude(signed short alt, unsigned char *morsePointer)
+void formatAltitude(unsigned short alt, unsigned char *morsePointer)
 {
 	signed char i;
 	unsigned char leading_zero = TRUE;
@@ -337,16 +334,16 @@ void formatAltitude(signed short alt, unsigned char *morsePointer)
 	
 	INSERT_IN_MORSE(PREFIX)
 	
-	// This counts down from 3 to 0 because the most significant digit comes first.
-	for(i = 3; i >= 0; i--)
+	// This counts down from 4 to 0 because the most significant digit comes first.
+	for(i = 4; i >= 0; i--)
 	{
 		/*
 		Multiply i by 4, then right-shift alt that amount
 		and OR it. This selects 4 bits at a time, allowing
 		us to send hexadecimal.
 		*/
-		
-		number = (alt >> (i << 2)) & 0x0F;
+		number = (unsigned short) alt / pow(10, i);
+		number = number % 10;
 		
 		/*
 		If the other digits so far have been zeros, and this
@@ -513,7 +510,7 @@ void main()
 		//printf((const far rom char*) "writePos: %d\r\n", writePos);
 		
 		if(checkNear(txPos, writePos, \
-			slowTimeLeft ? 1 : 2)) // Make sure you always have three seconds of morse left.
+			slowTimeLeft ? 1 : 25)) // Make sure you always have three seconds of morse left.
 		{
 			
 			printf((const far rom char*) "Getting more morse\r\n");
@@ -542,6 +539,8 @@ void main()
 					nextReadingTime = 0;
 					firstRun = FALSE;
 				}
+				
+				//Bug: this starts the slow part ahead of time, meaning some of the morse is caught by it.
 				
 				// Transmit call sign
 				txCallsign();

@@ -209,14 +209,15 @@ void bmp085Convert(long *temperature, long *pressure)
 	long x1, x2, b5, b6, x3, b3, p;
 	unsigned long b4, b7;
 	
-	ut = bmp085ReadTemp();		// Some bug here, have to read twice to get good data
+	ut = bmp085ReadTemp();
 	up = bmp085ReadPressure();
-	// Debug stuff
+	
+	// For running the conversion algorithm against known datasheet values.
 	//ut = 27898;
 	//up = 23843;
 	
 	
-	// Very sorry about this pile of awful code
+	// Very sorry about this pile of code
 	x1 = (ut - ac6) * ac5 / SHIFT(15);
 	x2 = (mc * SHIFT(11)) / (x1 + md);
 	b5 = x1 + x2;

@@ -7,7 +7,7 @@ unsigned char getLengthOfMorse(unsigned char *morse);
 void scheduleMorse(unsigned char *morse);
 void txCallsign();
 void openTxUsart();
-void formatAltitude(signed short alt, unsigned char *morsePointer);
+void formatAltitude(unsigned short alt, unsigned char *morsePointer);
 void txUsart(const rom char *dataString);
 void scheduleDump();
 
