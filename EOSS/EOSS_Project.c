@@ -20,7 +20,7 @@
 #define		SPEAKER_PIN						LATAbits.LATA1
 
 #define		MS_PER_TICK						120
-#define		INTERRUPT_CLOCK_SETTING			5536			// Change the 5536 if you change the clock speed.
+#define		INTERRUPT_CLOCK_SETTING			5536			// See doc/timer_math.markdown
 #define		MS_PER_CALLSIGN					10 * 60 * 1000	//10 minutes between callsigns, 60 seconds in a minute, 1000 milliseconds in a second.
 #define		TICKS_PER_CALLSIGN				5000			//MS_PER_CALLSIGN/MS_PER_TICK
 #define		PREFIX							16
