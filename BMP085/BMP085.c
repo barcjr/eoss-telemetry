@@ -27,8 +27,14 @@ unsigned long ac6;
 * Returned:		Void
 * Note:
 *
+<<<<<<< HEAD
 * Date:				Author:				Comments:
 * 4 Aug 2011		Nick ODell			Created
+=======
+* Date:			Authors:			Comments:
+* 16 Jul 2011   	Austin Schaller    		Created
+*			Nick ODell
+>>>>>>> 7c9b0ab34e41d6924c7cd821a3e06f62c444c1f3
 *
 ************************************************************************/
 void delay_ms(unsigned short ms)
@@ -161,6 +167,7 @@ long bmp085ReadTemp(void)
 
 /************************************************************************
 *
+<<<<<<< HEAD
 * Purpose:		Will read the 16-bit pressure value from BMP085 sensor.
 * Passed:		Void
 * Returned:		Long
@@ -168,6 +175,15 @@ long bmp085ReadTemp(void)
 *
 * Date:				Author:				Comments:
 * 16 Mar 2011		Austin Schaller		Created
+=======
+* Purpose:      	Configures USART module for TX operation
+* Passed:       	SPBRG, TXSTA, RCSTA
+* Returned:     	None
+* Note:			Asynchronous Mode
+*
+* Date:			Author:				Comments:
+* 20 Sep 2011		Austin Schaller     		Created
+>>>>>>> 7c9b0ab34e41d6924c7cd821a3e06f62c444c1f3
 *
 ************************************************************************/
 long bmp085ReadPressure(void)
