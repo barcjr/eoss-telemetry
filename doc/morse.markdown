@@ -5,4 +5,4 @@ There are two formats that we use to move morse code around. In the first, one b
 
 The schedule is 256 bits packed into 32 bytes. Two functions, getBitFromSchedule, and scheduleMorse, facilitate reading and writing, respectively. The function stepMorse is called every 120ms to take the next element on the schedule and set the radio pin to transmit it. It also wipes out the morse code it reads on a byte level so that you don't see morse from 256 ticks ago popping up. 
 
-There are two tools for encoding and decoding the morse library. They are located in morse/.
+There are two tools for encoding and decoding the morse library. They are located in [morse/](https://github.com/nickodell/eoss-telemetry/tree/master/morse).
