@@ -13,4 +13,4 @@ The PIC has 4 peripherals: The EEPROM (for storing readings), the BMP085 (for ca
 Morse Code
 ----------
 
-See doc/morse.markdown
+See [doc/morse.markdown](https://github.com/nickodell/eoss-telemetry/blob/master/doc/morse.markdown)
