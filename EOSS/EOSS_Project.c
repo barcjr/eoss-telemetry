@@ -235,6 +235,41 @@ void takeReading()
 	}
 	nextReadingTime += 50;
 }
+// Tramples on eepromBuffer
+void findUnusedAddress() {
+	unsigned char i, empty;
+	while(TRUE)
+	{
+		EERandomRead_mod(EEPROM_CONTROL, eepromAddr, &eepromBuffer[0], 16);
+		if(eepromAddr >= MAX_EEPROM_SIZE)
+		{
+			// Give up
+			printf((const far rom char*) "Out of space\r\n");
+			return;
+		}
+		for(i = 0; i < 16; i++)
+		{
+			empty = TRUE;
+			if(eepromBuffer[i] != 0xFF)
+			{
+				// This part isn't empty!
+				empty = FALSE;
+				break;
+			}
+			
+		}
+		if(empty)
+		{
+			
+			printf((const far rom char*) "Found empty at: %lx\r\n", eepromAddr);
+			// Found an empty part, we're done here.
+			return;
+		} else {
+			// Try the next part
+			eepromAddr += 16;
+		}
+	}
+}
 
 /** Main Loop **********************************************************/
 void main()
@@ -268,6 +303,9 @@ void main()
 	{
 		schedule[i] = 0;
 	}
+	
+	// Find empty patch of EEPROM
+	findUnusedAddress();
 	
 	printf((const far rom char*) "\r\n=========================\r\n");
 	printf((const far rom char*) "=========RESTART=========\r\n");
