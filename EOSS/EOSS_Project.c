@@ -66,6 +66,13 @@ unsigned char eepromBuffer[16];
 unsigned char eepromBufferIndex = 0;
 
 unsigned long eepromAddr = 0x00000;
+unsigned char flag;
+
+// Stuff that flag gets set to.
+#define STARTED			0b00000001
+#define OUT_OF_SPACE	0b00000010
+#define EEPROM_ERROR	0b00000100
+#define BMP_ERROR		0b00001000
 
 // Timing stuff, all measured in ticks
 unsigned short timeSinceCallsign = TICKS_PER_CALLSIGN + 1;	// This is so that the PIC transmits the callsign as soon as
@@ -185,9 +192,8 @@ unsigned char checkNear(unsigned char one, unsigned char two, unsigned char maxD
 eepromBuffer[eepromBufferIndex++] = (x);
 void takeReading()
 {
-	unsigned long tempRaw;
-	unsigned long pressRaw;
-	unsigned char i;
+	unsigned long tempRaw, pressRaw;
+	unsigned char i, err;
 	
 	
 	if(eepromAddr >= MAX_EEPROM_SIZE)
@@ -219,8 +225,9 @@ void takeReading()
 	}
 	else
 	{
-		// Buffer is almost full. Pad it and send it out
-		eepromBuffer[15] = 0;
+		// Buffer is almost full. Add the flag byte and send it out
+		eepromBuffer[15] = flag;
+		flag = 0;
 		printf((const far rom char*) "Writing to eeprom address 0x%lx\r\n", eepromAddr);
 		for(i = 0; i < 16; i++)
 		{
@@ -229,7 +236,11 @@ void takeReading()
 		}
 		printf((const far rom char*) "\r\n");
 			
-		printf("EEByteWrite_mod ret %d\r\n", EEByteWrite_mod(EEPROM_CONTROL, eepromAddr, &eepromBuffer[0], 16));
+		err = EEByteWrite_mod(EEPROM_CONTROL, eepromAddr, &eepromBuffer[0], 16);
+		if(err)
+		{
+			flag |= EEPROM_ERROR;
+		}
 		eepromAddr += 16;
 		eepromBufferIndex = 0;
 	}
@@ -304,14 +315,17 @@ void main()
 		schedule[i] = 0;
 	}
 	
-	// Find empty patch of EEPROM
-	findUnusedAddress();
+	flag = 0;
+	flag |= STARTED;
 	
 	printf((const far rom char*) "\r\n=========================\r\n");
 	printf((const far rom char*) "=========RESTART=========\r\n");
 	printf((const far rom char*) "=========RESTART=========\r\n");
 	printf((const far rom char*) "=========RESTART=========\r\n");
 	printf((const far rom char*) "=========================\r\n");
+	
+	// Find empty patch of EEPROM
+	findUnusedAddress();
 	
 	// Initialize Timer Interrupt
 	activateInterrupt();					// Set up the timer
