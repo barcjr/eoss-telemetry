@@ -90,7 +90,8 @@ void main()
 		temp = 1-pow(temp, 0.19029);
 		altitude = floor(44330*temp);
 		printf((const far rom char*)"Altitude: %ldm\r\n", altitude);
+		printf((const far rom char*) "=========================\r\n");
 		
-		delay_ms(1000);
+		delay_ms(10000);
 	}
 }
