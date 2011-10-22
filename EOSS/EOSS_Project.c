@@ -19,23 +19,25 @@
 #define		MORSE_PIN						LATAbits.LATA0
 #define		SPEAKER_PIN						LATAbits.LATA1
 
-#define		MS_PER_TICK						120
+#define		MS_PER_TICK						60
 #define		INTERRUPT_CLOCK_SETTING			5536			// See doc/timer_math.markdown
 #define		MS_PER_CALLSIGN					10 * 60 * 1000	//10 minutes between callsigns, 60 seconds in a minute, 1000 milliseconds in a second.
-#define		TICKS_PER_CALLSIGN				5000			//MS_PER_CALLSIGN/MS_PER_TICK
+#define		TICKS_PER_CALLSIGN				10000			//MS_PER_CALLSIGN/MS_PER_TICK
 #define		PREFIX							10
 #define		SUFFIX							11
 #define		TERMINATOR						0xFF
 #define		DATA_BYTES_PER_LINE				4
 
-#define		CALLSIGN_SLOW_FACTOR			3
-#define		ALTITUDE_SLOW_FACTOR			3
+#define		CALLSIGN_SLOW_FACTOR			2
+#define		ALTITUDE_SLOW_FACTOR			2
 
-#define		FOSC		8000000
-#define		BAUD 		9600
+#define		FOSC							8000000
+#define		BAUD 							9600
 
-#define		TRUE		1
-#define		FALSE		0
+#define		TRUE							1
+#define		FALSE							0
+
+#define		EEPROM_CONTROL					0xA0			
 
 //** Include Files ******************************************************
 
@@ -50,20 +52,47 @@
 // Custom libraries
 #include "EOSS_Project.h"
 #include "../BMP085/BMP085.c"		// IMPORTANT - Must include functions for BMP085 sensor!
+#include "../EEPROM/EEPROM.c"
 #include "morse.c"
 
+#define MAX_EEPROM_SIZE 0x20000
 
 #pragma config OSC=INTIO67, WDT=OFF, LVP=OFF, DEBUG=ON
 
 
 //** Globals Variables **************************************************
 unsigned char blockMorse[8];
+unsigned char eepromBuffer[16];
+unsigned char eepromBufferIndex = 0;
+
+unsigned long eepromAddr = 0x00000;
 
 // Timing stuff, all measured in ticks
 unsigned short timeSinceCallsign = TICKS_PER_CALLSIGN + 1;	// This is so that the PIC transmits the callsign as soon as
 															// it boots.
 unsigned char nextReadingTime = 0;
 
+/************************************************************************
+*
+* Purpose:		Configures USART module for TX operation
+* Passed:		SPBRG, TXSTA, RCSTA
+* Returned:		None
+* Note:			Asynchronous Mode
+*
+* Date:		Author:					Comments:
+* 20 Sep 2011	Austin Schaller		Created
+*
+************************************************************************/
+void openTxUsart(void)
+{
+	// TX UART Configuration
+	
+	SPBRG = 12;				// Set baud = 9600
+	TXSTAbits.SYNC = 0;		// Asynchronous mode
+	RCSTAbits.SPEN = 1;		// Serial port enabled
+	TXSTAbits.BRGH = 0;		// Low Speed
+	TXSTAbits.TXEN = 1;		// Enable transmission
+}
 
 /************************************************************************
 *
@@ -94,7 +123,7 @@ void txUsart(const rom char *data)
 ************************************************************************/
 void activateInterrupt(void)
 {
-	OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_4);
+	OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_2);
 	INTCONbits.GIEH = 1; //enable interrupts
 }
 
@@ -110,14 +139,15 @@ void activateInterrupt(void)
 #pragma interrupt onInterrupt
 void onInterrupt(void)
 {
-	if(INTCONbits.TMR0IF) {
+
+	if(INTCONbits.TMR0IF)
+	{
 		WriteTimer0(INTERRUPT_CLOCK_SETTING);
 		timeSinceCallsign++;
-		INTCONbits.TMR0IF = 0; // Clear the interrupt
 		stepMorse();
-		
-		//printf((const far rom char*) "INTERRUPT\r\n");
-		//MORSE_PIN = ~MORSE_PIN;
+		SPEAKER_PIN = MORSE_PIN;
+		//printf("%c", MORSE_PIN ? '.' : ' ');
+		INTCONbits.TMR0IF = 0; // Clear the interrupt
 	}
 }
 
@@ -151,6 +181,61 @@ unsigned char checkNear(unsigned char one, unsigned char two, unsigned char maxD
 	}
 }
 
+#define INSERT_IN_EEPROM_BUFFER(x) \
+eepromBuffer[eepromBufferIndex++] = (x);
+void takeReading()
+{
+	unsigned long tempRaw;
+	unsigned long pressRaw;
+	unsigned char i;
+	
+	
+	if(eepromAddr >= MAX_EEPROM_SIZE)
+	{
+		printf("Out of space\r\n");
+		return;
+	}	
+	printf((const far rom char*) "Getting a reading\r\n");
+	
+	tempRaw = bmp085ReadTemp();
+	pressRaw = bmp085ReadPressure();
+	
+	printf((const far rom char*) "pressRaw %lx tempRaw %lx\r\n", pressRaw, tempRaw);
+	
+	
+	// Insert pressure, low byte first.
+	INSERT_IN_EEPROM_BUFFER((pressRaw >> 16) & 0xFF);
+	INSERT_IN_EEPROM_BUFFER((pressRaw >>  8) & 0xFF);
+	INSERT_IN_EEPROM_BUFFER(pressRaw & 0xFF);
+	
+	// Insert temperature, low byte first.
+	INSERT_IN_EEPROM_BUFFER((tempRaw >> 8)  & 0xFF);
+	INSERT_IN_EEPROM_BUFFER(tempRaw & 0xFF);
+	
+	
+	if(eepromBufferIndex < 15)
+	{
+		// Do nothing
+	}
+	else
+	{
+		// Buffer is almost full. Pad it and send it out
+		eepromBuffer[15] = 0;
+		printf((const far rom char*) "Writing to eeprom address 0x%lx\r\n", eepromAddr);
+		for(i = 0; i < 16; i++)
+		{
+			printf((const far rom char*) "%02x ", eepromBuffer[i]);
+		
+		}
+		printf((const far rom char*) "\r\n");
+			
+		printf("EEByteWrite_mod ret %d\r\n", EEByteWrite_mod(EEPROM_CONTROL, eepromAddr, &eepromBuffer[0], 16));
+		eepromAddr += 16;
+		eepromBufferIndex = 0;
+	}
+	nextReadingTime += 50;
+}
+
 /** Main Loop **********************************************************/
 void main()
 {
@@ -170,13 +255,13 @@ void main()
 	
 	// Initialize I2C
 	OpenI2C(MASTER, SLEW_OFF);
+	SSPADD = 4;
 	
 	// Initialize BMP085
 	BMP085_Calibration();
 	
-	// Intialize SPI
+	// Intialize UART
 	openTxUsart();
-	
 	
 	// Erase Schedule
 	for(i = 0; i < 32; i++)
@@ -193,10 +278,11 @@ void main()
 	// Initialize Timer Interrupt
 	activateInterrupt();					// Set up the timer
 	WriteTimer0(INTERRUPT_CLOCK_SETTING);	// Set the timer
-	timeSinceCallsign = 0; //TICKS_PER_CALLSIGN + 1;
+	timeSinceCallsign = TICKS_PER_CALLSIGN + 1;
 	
 	while(1)
 	{
+		bmp085Convert(&temperature, &pressure);
 		if((timeSinceCallsign & 0x0F) == 0)
 		{
 			//printf((const far rom char*) "timeSinceCallsign: %d\r\n", timeSinceCallsign);
@@ -205,11 +291,10 @@ void main()
 		//printf((const far rom char*) "txPos: %d\r\n", txPos);
 		//printf((const far rom char*) "writePos: %d\r\n", writePos);
 		
-		if(checkNear(txPos, writePos, \
-			slowTimeLeft ? 1 : 4)) // Make sure you always have three seconds of morse left.
+		if(checkNear(txPos, writePos, 5)) // Make sure you always have morse left.
 		{
 			
-			printf((const far rom char*) "Getting more morse\r\n");
+			//printf((const far rom char*) "Getting more morse\r\n");
 			// Temperature & Pressure Measurements
 			bmp085Convert(&temperature, &pressure);
 			
@@ -219,7 +304,7 @@ void main()
 			
 			// Will only work if temporary is positive.
 			altitude = floor((44330 * temporary) + 0.5);
-			printf((const far rom char*) "altitude: %d\r\n", altitude);
+			//printf((const far rom char*) "altitude: %d\r\n", altitude);
 			
 			formatAltitude(altitude, &blockMorse[0]);
 			length = getLengthOfMorse(&blockMorse[0]);
@@ -232,11 +317,12 @@ void main()
 				
 				if(firstRun)
 				{
+					// If we just booted, we want to take a reading first thing.
 					nextReadingTime = 0;
 					firstRun = FALSE;
 				}
 				
-				//Bug: this starts the slow part ahead of time, meaning some of the morse is caught by it.
+				//Bug: this starts the slow part ahead of time, meaning some of the altitude morse is caught by it.
 				
 				// Transmit call sign
 				txCallsign();
@@ -248,17 +334,10 @@ void main()
 			}
 		}
 		
-		if((timeSinceCallsign & 0xFF) == nextReadingTime)
+		if(checkNear((unsigned char)(timeSinceCallsign & 0xFF), nextReadingTime, 5))
 		{
-			//printf((const far rom char*) "Getting a reading\r\n");
-			//bmp085Convert(&temperature, &pressure);
 			// Store temperature, pressure in I2C Memory
+			takeReading();
 		}
-		
-		while(MORSE_PIN)
-		{
-			SPEAKER_PIN = ~SPEAKER_PIN;
-			Delay100TCYx(20);
-		}	
 	}
 }

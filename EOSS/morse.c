@@ -13,7 +13,7 @@ rom const unsigned char MorseCodeLib[15][DATA_BYTES_PER_LINE + 1] =
 	{0x77, 0x57, 0x00, 0x00, 0x12},  // '8'
 	{0x77, 0x77, 0x01, 0x00, 0x14},  // '9'
 	{0x1d, 0x5d, 0x71, 0x00, 0x1e},  // 'ALT '
-	{0x70, 0x07, 0x00, 0x00, 0x20}, //0x12},  // ' M '
+	{0x70, 0x07, 0x00, 0x00, 0x12},  // ' M '
 	{0xdd, 0x71, 0x77, 0x77, 0x20},  // 'W0DK/B'
 	{0x5c, 0x71, 0x1d, 0x57, 0x20},  // 'W0DK/B'
 	{0x17, 0x57, 0x01, 0x00, 0x14},  // 'W0DK/B'
@@ -62,7 +62,8 @@ unsigned char getBitFromSchedule(unsigned char bitPos)
 ************************************************************************/
 void stepMorse()
 {
-	unsigned char oneBit;
+	
+	
 	if(slowTimeLeft > 0)
 	{
 		if(skippy == CALLSIGN_SLOW_FACTOR)
@@ -90,15 +91,15 @@ void stepMorse()
 	}
 	
 	
-	oneBit = getBitFromSchedule(txPos);
-	
-	MORSE_PIN = oneBit;
-	//printf((const far rom char*) "Morse %d\r\n", oneBit);
+	MORSE_PIN = getBitFromSchedule(txPos);
+
+	//printf((const far rom char*) "%d", MORSE_PIN);
 	//printf((const far rom char*) "txPos: %d\r\n", txPos);
 	//printf((const far rom char*) "writePos: %d\r\n", writePos);
 	//printf((const far rom char*) "Byte: %d\r\n", schedule[txPos >> 3]);
 	
-	
+	// If the bottom three bits are zero, we just finished the previous byte.
+	// Clear it out.
 	if((txPos & 0x07) == 0)
 	{
 		schedule[(txPos - 1) >> 3] = 0;		/*	Clear out the schedule behind you, so that bits from 256 ticks ago
@@ -126,7 +127,7 @@ void scheduleMorse(unsigned char *morse)
 	while((index = *morse++) != TERMINATOR)
 	{
 		unsigned char length = MorseCodeLib[index][DATA_BYTES_PER_LINE];
-		printf((const far rom char*) "MorseCodeLib: %d\r\n", index);
+		//printf((const far rom char*) "MorseCodeLib: %d\r\n", index);
 		//printf((const far rom char*) "\r\n");
 		for(i = 0; i < length; i++)
 		{
@@ -137,13 +138,13 @@ void scheduleMorse(unsigned char *morse)
 			*/
 			
 			txBit = (MorseCodeLib[index][i >> 3] >> (i & 0x07)) & 0x01;
-			printf((const far rom char*) "%d", txBit);
+			//printf((const far rom char*) "%d", txBit);
 			
 			schedule[writePos >> 3] |= txBit << (writePos & 0x07);
 			//printf((const far rom char*) "SByte: %d\r\n", schedule[writePos >> 3]);
 			writePos++;
 		}
-		printf((const far rom char*) "\r\n");
+		//printf((const far rom char*) "\r\n");
 	}
 }
 
@@ -214,28 +215,6 @@ void scheduleDump()
 }
 
 
-
-/************************************************************************
-*
-* Purpose:		Configures USART module for TX operation
-* Passed:		SPBRG, TXSTA, RCSTA
-* Returned:		None
-* Note:			Asynchronous Mode
-*
-* Date:		Author:					Comments:
-* 20 Sep 2011	Austin Schaller		Created
-*
-************************************************************************/
-void openTxUsart(void)
-{
-	// TX UART Configuration
-	
-	SPBRG = 12;				// Set baud = 9600
-	TXSTAbits.SYNC = 0;		// Asynchronous mode
-	RCSTAbits.SPEN = 1;		// Serial port enabled
-	TXSTAbits.BRGH = 0;		// Low Speed
-	TXSTAbits.TXEN = 1;		// Enable transmission
-}
 
 
 
