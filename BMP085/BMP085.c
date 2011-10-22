@@ -3,9 +3,11 @@
 // * Defines ************************************************************
 #define		BMP085_R	0xEF
 #define		BMP085_W	0xEE
-#define		OSS			0		// Oversampling Setting (note: code is not set up to use other OSS values)
+#define		OSS			3		// Oversampling Setting (note: code is not set up to use other OSS values)
 
 // * Globals Variables **************************************************
+
+const rom unsigned char OSS_conversion_time[] = {5, 8, 14, 26};
 
 // Voodoo calibration varibles
 long ac1;
@@ -100,14 +102,50 @@ void BMP085_Known_Calibration(void)
 * Returned:		Short
 * Note:			Return value must be typecast to an signed short if reading a signed value!
 *
-* Date:				Author:				Comments:
-* 16 Mar 2011		Austin Schaller		Created
-*
 ************************************************************************/
 unsigned short bmp085ReadShort(unsigned char address)
 {
 	unsigned short msb, lsb;
 	unsigned short data;
+
+	StartI2C();
+
+	WriteI2C(BMP085_W);		// Write 0xEE
+	WriteI2C(address);		// Write register address
+
+	RestartI2C();
+
+	WriteI2C(BMP085_R);		// Write 0xEF
+
+	msb = ReadI2C();		// Get MSB result
+	AckI2C();
+	lsb = ReadI2C();		// Get LSB result
+	
+
+	NotAckI2C();
+	StopI2C();
+
+	delay_ms(10);
+
+	data = msb << 8;
+	data |= lsb;
+
+	return data;
+}
+
+/************************************************************************
+*
+* Purpose:		Will read three sequential 8-bit registers, and return
+				a 16-bit value.
+* Passed:		Unsigned char
+* Returned:		Short
+* Note:			Return value must be typecast to an signed short if reading a signed value!
+*
+************************************************************************/
+unsigned long bmp085ReadThreeBytes(unsigned char address)
+{
+	unsigned short msb, lsb, xlsb;
+	unsigned long data;
 
 	StartI2C();
 
@@ -127,8 +165,11 @@ unsigned short bmp085ReadShort(unsigned char address)
 
 	delay_ms(10);
 
-	data = msb << 8;
+	data = msb;
+	data <<= 8;
 	data |= lsb;
+	data <<= 8;
+	data |= xlsb;
 
 	return data;
 }
@@ -139,10 +180,7 @@ unsigned short bmp085ReadShort(unsigned char address)
 * Passed:		Void
 * Returned:		Long
 * Note:
-*
-* Date:				Author:				Comments:
-* 16 Mar 2011		Austin Schaller		Created
-*
+* 
 ************************************************************************/
 long bmp085ReadTemp(void)
 {
@@ -176,13 +214,16 @@ long bmp085ReadPressure(void)
 
 	WriteI2C(BMP085_W);		// Write 0xEE
 	WriteI2C(0xF4);		// Write register address
-	WriteI2C(0x34);		// Write register data for temp
-
+	WriteI2C(0x34 | (OSS << 6));		// Write register data for temp
+	
 	StopI2C();
-
-	delay_ms(10);		// Max time is 4.5ms
-
-	return (unsigned long) bmp085ReadShort(0xF6);
+	
+	delay_ms(OSS_conversion_time[OSS]);		// Max time is 4.5ms
+	if(OSS) {
+		return bmp085ReadThreeBytes(0xF6);
+	} else {
+		return ((long) bmp085ReadShort(0xF6)) << 8;
+	}
 }
 
 /************************************************************************
@@ -215,7 +256,9 @@ void bmp085Convert(long *temperature, long *pressure)
 	// For running the conversion algorithm against known datasheet values.
 	//ut = 27898;
 	//up = 23843;
-
+	
+	// Throw away the data that is essentially noise
+	up = up >> (8-OSS);
 
 	// Very sorry about this pile of code
 	x1 = (ut - ac6) * ac5 / SHIFT(15);
