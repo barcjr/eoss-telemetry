@@ -23,8 +23,8 @@ rom const unsigned char MorseCodeLib[15][DATA_BYTES_PER_LINE + 1] =
 unsigned char schedule[32];
 unsigned char txPos = 0;
 unsigned char writePos = 0;
-unsigned char skippy = 0;		// Used in conjunction with slowTimeLeft to skip morse transmission sometimes.
-unsigned char slowTimeLeft = 0;	// Transmit 25 times slower (i.e. 3 second element length) if > 0. Measured in long elements
+unsigned char skippy = 0;		// Used to slow down morse transmission.
+unsigned char callsignTimeLeft = 0;	// Transmit with the callsign slow factor if > 0. Measured in long elements
 
 /************************************************************************
 *
@@ -64,13 +64,13 @@ void stepMorse()
 {
 	
 	
-	if(slowTimeLeft > 0)
+	if(callsignTimeLeft > 0)
 	{
 		if(skippy == CALLSIGN_SLOW_FACTOR)
 		{
 			// Don't skip this time.
 			skippy = 1;
-			slowTimeLeft--;
+			callsignTimeLeft--;
 		} else {
 			// Skip!
 			skippy++;
@@ -190,7 +190,7 @@ void txCallsign()
 	
 	//printf((const far rom char*) "txCallsign\r\n");
 
-	slowTimeLeft = length;
+	callsignTimeLeft = length;
 	scheduleMorse(&morse[0]);
 	//scheduleDump();
 }

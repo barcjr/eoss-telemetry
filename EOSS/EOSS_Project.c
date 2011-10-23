@@ -378,7 +378,7 @@ void main()
 				
 				// Transmit call sign
 				txCallsign();
-				printf((const far rom char*) "slowTimeLeft: %d\r\n", slowTimeLeft);
+				printf((const far rom char*) "callsignTimeLeft: %d\r\n", callsignTimeLeft);
 			}
 			else
 			{
