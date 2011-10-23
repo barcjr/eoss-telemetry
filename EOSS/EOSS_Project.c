@@ -374,8 +374,6 @@ void main()
 					firstRun = FALSE;
 				}
 				
-				//Bug: this starts the slow part ahead of time, meaning some of the altitude morse is caught by it.
-				
 				// Transmit call sign
 				txCallsign();
 				printf((const far rom char*) "callsignTimeLeft: %d\r\n", callsignTimeLeft);
