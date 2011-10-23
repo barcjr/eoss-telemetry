@@ -290,7 +290,7 @@ void main()
 	long pressure = 0;
 	signed short altitude = 0;
 	double temporary = 0;
-	unsigned char length;
+	unsigned short length;
 	unsigned char firstRun = TRUE;
 	
 	OSCCONbits.IRCF0=1;
@@ -361,7 +361,7 @@ void main()
 			formatAltitude(altitude, &blockMorse[0]);
 			length = getLengthOfMorse(&blockMorse[0]);
 			
-			if((timeSinceCallsign + length + 25) > TICKS_PER_CALLSIGN)
+			if((timeSinceCallsign + length * ALTITUDE_SLOW_FACTOR) > TICKS_PER_CALLSIGN)
 			{
 				// Make sure that we set the timing variables correctly
 				nextReadingTime = nextReadingTime - (timeSinceCallsign & 0xFF);
