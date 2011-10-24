@@ -172,12 +172,15 @@ unsigned char checkNear(unsigned char one, unsigned char two, unsigned char maxD
 	
 	result = one;
 	result -= two;
-	
 	//printf((const far rom char*) "result: %d\r\n", result);
 	if(result < 0)
 	{
 		result = -result;
 	}
+	if(result > 256 - maxDist)
+	{
+		return TRUE;
+	}	
 	if(result <= maxDistTemp)
 	{
 		return TRUE;
