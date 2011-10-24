@@ -59,7 +59,7 @@ signed char EEPROM_memcheck(unsigned char device, unsigned char needle)
 		temp[i] = 0x48 ^ i;
 	}
 	
-	for(address = 0x0000; address < 0x10000; address += BLOCK_SIZE)
+	for(address = 0x0000; address < 0x20000; address += BLOCK_SIZE)
 	{
 		err = EERandomRead_mod(device, address, &temp[0], BLOCK_SIZE);
 		//printf((const far rom char*) "blah\r\n");
@@ -104,7 +104,7 @@ signed char EEPROM_memwrite(unsigned char device, unsigned char needle)
 	
 	printf((const far rom char*) "Full memory write start of device %02x.\r\n", device);
 	
-	for(address = 0x0000; address < 0xFFFF; address += BLOCK_SIZE)
+	for(address = 0x0000; address < 0x20000; address += BLOCK_SIZE)
 	{
 		err = EEByteWrite_mod(device, address, &temp_write[0], BLOCK_SIZE);
 		//printf((const far rom char*) "ERROR in EEByteWrite_mod: %d\r\n", err);
@@ -135,7 +135,7 @@ signed char EEPROM_memdump(unsigned char device)
 	
 	printf((const far rom char*) "Full memory dump start of device %02x.\r\n", device);
 	
-	for(address = 0x0000; address < 0x10000; address += BLOCK_SIZE)
+	for(address = 0x0000; address < 0x20000; address += BLOCK_SIZE)
 	{
 		err = EERandomRead_mod(device, address, &temp[0], BLOCK_SIZE);
 		//printf((const far rom char*) "blah\r\n");
@@ -205,13 +205,9 @@ void main()
 		printf((const far rom char*) "MASTER: %02x, SSPADD: %d\r\n", MASTER, SSPADD);
 		
 		control = calcI2CAddress(CONTROL_BASE, CHIP_NUM, 0);
-		//EEPROM_memwrite(control, 0xDD);
-		//EEPROM_memcheck(control, 0xFF);
-		EEPROM_memdump(control);
-		
-		control = calcI2CAddress(CONTROL_BASE, CHIP_NUM, 1);
 		//EEPROM_memwrite(control, 0xFF);
-		//EEPROM_memcheck(control, 0xFF);
+		EEPROM_memcheck(control, 0xFF);
+		//EEPROM_memdump(control);
 	
 		
 #if 0
