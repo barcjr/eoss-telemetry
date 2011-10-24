@@ -37,7 +37,13 @@
 #define		TRUE							1
 #define		FALSE							0
 
-#define		EEPROM_CONTROL					0xA0			
+#define		EEPROM_CONTROL					0xA0
+
+// Stuff that flag gets set to.
+#define STARTED			0b00000001
+#define OUT_OF_SPACE	0b00000010
+#define EEPROM_ERROR	0b00000100
+#define BMP_ERROR		0b00001000		
 
 //** Include Files ******************************************************
 
@@ -48,12 +54,6 @@
 #include <i2c.h>
 #include <timers.h>
 #include <math.h>		// Required for altitude conversion
-
-// Custom libraries
-#include "EOSS_Project.h"
-#include "../BMP085/BMP085.c"		// IMPORTANT - Must include functions for BMP085 sensor!
-#include "../EEPROM/EEPROM.c"
-#include "morse.c"
 
 #define MAX_EEPROM_SIZE 0x20000
 
@@ -68,16 +68,16 @@ unsigned char eepromBufferIndex = 0;
 unsigned long eepromAddr = 0x00000;
 unsigned char flag;
 
-// Stuff that flag gets set to.
-#define STARTED			0b00000001
-#define OUT_OF_SPACE	0b00000010
-#define EEPROM_ERROR	0b00000100
-#define BMP_ERROR		0b00001000
 
 // Timing stuff, all measured in ticks
-unsigned short timeSinceCallsign = TICKS_PER_CALLSIGN + 1;	// This is so that the PIC transmits the callsign as soon as
-															// it boots.
+unsigned short timeSinceCallsign;
 unsigned char nextReadingTime = 0;
+
+// Include our stuff after the variables in case it needs them.
+#include "EOSS_Project.h"
+#include "../BMP085/BMP085.c"
+#include "../EEPROM/EEPROM.c"
+#include "morse.c"
 
 /************************************************************************
 *

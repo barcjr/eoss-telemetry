@@ -9,6 +9,8 @@
 
 const rom unsigned char OSS_conversion_time[] = {5, 8, 14, 26};
 
+signed char BMP_err;
+
 // Voodoo calibration varibles
 long ac1;
 long ac2;
@@ -94,6 +96,16 @@ void BMP085_Known_Calibration(void)
 	md = 2868;
 }
 
+void BMP_process_error()
+{
+	if(BMP_err != 0)
+	{
+		flag |= BMP_ERROR;
+		printf((const far rom char*) "BMP_err: %d\r\n", BMP_err);
+		BMP_err = 0;
+	}
+}
+
 /************************************************************************
 *
 * Purpose:		Will read two sequential 8-bit registers, and return
@@ -107,18 +119,17 @@ unsigned short bmp085ReadShort(unsigned char address)
 {
 	unsigned short msb, lsb;
 	unsigned short data;
-
 	StartI2C();
-
-	WriteI2C(BMP085_W);		// Write 0xEE
-	WriteI2C(address);		// Write register address
+	
+	BMP_err |= WriteI2C(BMP085_W);		// Write 0xEE
+	BMP_err |= WriteI2C(address);		// Write register address
 
 	RestartI2C();
 
-	WriteI2C(BMP085_R);		// Write 0xEF
-
+	BMP_err |= WriteI2C(BMP085_R);		// Write 0xEF
+	
 	msb = ReadI2C();		// Get MSB result
-	AckI2C();
+	BMP_err |= AckI2C();
 	lsb = ReadI2C();		// Get LSB result
 	
 
@@ -129,6 +140,8 @@ unsigned short bmp085ReadShort(unsigned char address)
 
 	data = msb << 8;
 	data |= lsb;
+	
+	BMP_process_error();
 
 	return data;
 }
@@ -149,12 +162,12 @@ unsigned long bmp085ReadThreeBytes(unsigned char address)
 
 	StartI2C();
 
-	WriteI2C(BMP085_W);		// Write 0xEE
-	WriteI2C(address);		// Write register address
+	BMP_err |= WriteI2C(BMP085_W);		// Write 0xEE
+	BMP_err |= WriteI2C(address);		// Write register address
 
 	RestartI2C();
 
-	WriteI2C(BMP085_R);		// Write 0xEF
+	BMP_err |= WriteI2C(BMP085_R);		// Write 0xEF
 
 	msb = ReadI2C();		// Get MSB result
 	AckI2C();
@@ -170,6 +183,8 @@ unsigned long bmp085ReadThreeBytes(unsigned char address)
 	data |= lsb;
 	data <<= 8;
 	data |= xlsb;
+	
+	BMP_process_error();
 
 	return data;
 }
