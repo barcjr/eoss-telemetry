@@ -1,6 +1,6 @@
 import binascii
 import re
-from sensor_calibration_test import callibrate
+from sensor_calibration_test import calibrate
 
 dump = open("dump.txt").read()
 
@@ -38,7 +38,7 @@ while True:
         print calibrate(ut, up)
     if block[0] != 0:
         errors.append(block[0])
-        print block[0]
+        #print block[0]
     addr += 16
 print errors
 
