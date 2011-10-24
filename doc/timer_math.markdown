@@ -17,24 +17,24 @@ There is a register that the PIC increments (increases by one) every cycle, no m
 Calculating the clock setting
 -----------------------------
 
-First, we figure out how often we want the interrupt to fire. We wanted 10WPM morse. 
+First, we figure out how often we want the interrupt to fire. We wanted 20WPM morse. 
 
-    10 words = 500 elements
-    500 elements per minute = 500/60 elements per second
+    20 words = 1000 elements
+    1000 elements per minute = 1000/60 elements per second
 
 But we want seconds per element, not elements per second.
 
-    60/500 elements per second = 0.12 seconds = 120 milliseconds
+    60/1000 elements per second = 0.06 seconds = 60 milliseconds
 
-So the interrupt should fire every 120 milliseconds.
+So the interrupt should fire every 60 milliseconds.
 
-Then, we take the clock speed. In our case, 8MHz. Divide it by 4. 2MHz. This means that register will be incremented 2 million times a second. But how many times will it be incremented in 120 ms?
+Then, we take the clock speed. In our case, 8MHz. Divide it by 4. 2MHz. This means that register will be incremented 2 million times a second. But how many times will it be incremented in 60 ms?
 
-    2,000,000 * 0.120 = 240,000
+    2,000,000 * 0.060 = 120,000
 
-Next, if we use a 16-bit timer, then there can only be 2^16 increments before the interrupt runs. This means we have to add a prescaler of 1:4.
+Next, if we use a 16-bit timer, then there can only be 2^16 increments before the interrupt runs. This means we have to add a prescaler of 1:2.
 
-    2,000,000 * 0.120 / 4 = 60,000
+    2,000,000 * 0.60 / 2 = 60,000
 
 Subtract from 2^16 to get our clock setting.
 
