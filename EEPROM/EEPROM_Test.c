@@ -208,42 +208,6 @@ void main()
 		//EEPROM_memwrite(control, 0xFF);
 		EEPROM_memcheck(control, 0xFF);
 		//EEPROM_memdump(control);
-	
 		
-#if 0
-		printf((const far rom char*) "Test initiated.\r\n");
-		
-		for(i = 0; i < 32; i++) {
-			write_src[i] = 0xFF;
-			read_dest[i] = 0x00;
-		}
-		printf((const far rom char*) "EEByteWrite_mod: %d\r\n", EEByteWrite_mod(control, 0x0000, &write_src[0], 32));
-		printf((const far rom char*) "EERandomRead_mod: %d\r\n", EERandomRead_mod(control, 0x0000, &read_dest[0], 32));
-		for(i = 0; i < 32; i++) {
-			printf((const far rom char*) "Byte read: %02x\r\n", read_dest[i]);
-		}
-		
-#endif	 
-		/*if(!ack)
-		{
-				printf("Test successful, the byte was sent.\r\n");
-				
-				for(i = 0; i < 5; i++)
-				{
-						LED = 1;
-						Delay10KTCYx(10);
-						LED = 0;
-						Delay10KTCYx(10);
-				}
-		}
-		else
-		{
-				printf((const far rom char*) "Test unsuccessful...\r\n");
-				LED = 1;
-		}*/
-		/*for(i = 0; i < 10; i++)
-		{
-			Delay10KTCYx(100);
-		}*/
 		while(1);
 }
