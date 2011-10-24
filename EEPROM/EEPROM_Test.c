@@ -152,7 +152,7 @@ signed char EEPROM_memdump(unsigned char device)
 		}
 	}
 	
-	printf((const far rom char*) "Full memory dump successful.\r\n");
+	printf((const far rom char*) "\r\nFull memory dump successful.\r\n");
 	return 0;
 }
 
@@ -206,8 +206,8 @@ void main()
 		
 		control = calcI2CAddress(CONTROL_BASE, CHIP_NUM, 0);
 		//EEPROM_memwrite(control, 0xFF);
-		EEPROM_memcheck(control, 0xFF);
-		//EEPROM_memdump(control);
+		//EEPROM_memcheck(control, 0xFF);
+		EEPROM_memdump(control);
 		
 		while(1);
 }
