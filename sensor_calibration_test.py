@@ -3,21 +3,27 @@ BMP085 calibration routine. Constants
 and input values are hard-coded. I may
 clean this up at some point."""
 
+
 ac1 = 8271
-ac2 = 64578
-ac3 = 51184
+ac2 = -958
+ac3 = -14352
 ac4 = 33487
 ac5 = 25164
 ac6 = 22590
 b1 = 5498
 b2 = 48
-mb = 32768
-mc = 54461
+mb = -32768
+mc = -11075
 md = 2432
 
-oss = 0
+oss = 3
 
-def calc(ut = 30859, up = 35504):
+def calibrate(ut, up):
+    up = up >> (8-oss)
+
+    #Force it to handle as float
+    up, ut = float(up), float(ut)
+    
     x1 = (ut - ac6) * ac5 / 2**15
     x2 = mc * 2**11 / (x1 + md)
     b5 = x1 + x2
@@ -46,8 +52,3 @@ def calc(ut = 30859, up = 35504):
     return t, p
 
 
-print calc()
-
-#import matplotlib.pyplot as pyplot
-#pyplot.plot(map(lambda up: calc(10000, up)[1], range(-20000, 20000)))
-#pyplot.show()
