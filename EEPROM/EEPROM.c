@@ -23,7 +23,7 @@ signed char EEByteWrite_mod(unsigned char control, unsigned long address, unsign
 	unsigned char blockSel;
 	signed char err;
 	
-	printf("EEByteWrite_mod\r\n");
+	//printf("EEByteWrite_mod\r\n");
 	IdleI2C();							// ensure module is idle
 	StartI2C();							// initiate START condition
 	while(SSPCON2bits.SEN);
@@ -39,7 +39,7 @@ signed char EEByteWrite_mod(unsigned char control, unsigned long address, unsign
 	
 	for(i = 0; i < 3; i++)
 	{
-		printf("Byte to write to I2C: %02x\r\n", bytes[i]);
+		//printf("Byte to write to I2C: %02x\r\n", bytes[i]);
 		err = WriteI2C(bytes[i]);		// write byte - R/W bit should be 0
 		//printf("done\r\n");
 		if(err)
