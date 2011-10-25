@@ -88,9 +88,6 @@ unsigned char nextReadingTime = 0;
 * Returned:		None
 * Note:			Asynchronous Mode
 *
-* Date:		Author:					Comments:
-* 20 Sep 2011	Austin Schaller		Created
-*
 ************************************************************************/
 void openTxUsart(void)
 {
@@ -107,10 +104,7 @@ void openTxUsart(void)
 *
 * Purpose:		Transmits characters
 * Passed:		TXIF, TXREG
-* Returned:			None
-*
-* Date:			Author:				Comments:
-* 20 Sep 2011	Austin Schaller		Created
+* Returned:		None
 *
 ************************************************************************/
 void txUsart(const rom char *data)

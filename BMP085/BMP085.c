@@ -31,9 +31,6 @@ unsigned long ac6;
 * Returned:		Void
 * Note:
 *
-* Date:				Author:				Comments:
-* 4 Aug 2011		Nick ODell			Created
-*
 ************************************************************************/
 void delay_ms(unsigned short ms)
 {
@@ -49,9 +46,6 @@ void delay_ms(unsigned short ms)
 * Passed:		Void
 * Returned:		Void
 * Note:
-*
-* Date:				Author:				Comments:
-* 16 Mar 2011		Austin Schaller		Created
 *
 ************************************************************************/
 void BMP085_Calibration(void)
@@ -76,9 +70,6 @@ void BMP085_Calibration(void)
 * Passed:		Void
 * Returned:		Void
 * Note:
-*
-* Date:				Author:				Comments:
-* 16 Mar 2011		Austin Schaller		Created
 *
 ************************************************************************/
 void BMP085_Known_Calibration(void)
@@ -227,9 +218,6 @@ long bmp085ReadTemp(void)
 * Returned:		Long
 * Note:
 *
-* Date:				Author:				Comments:
-* 16 Mar 2011		Austin Schaller		Created
-*
 ************************************************************************/
 long bmp085ReadPressure(void)
 {
@@ -255,9 +243,6 @@ long bmp085ReadPressure(void)
 * Passed:		Long *temperature, long *pressure
 * Returned:		Void
 * Note:
-*
-* Date:				Author:				Comments:
-* 16 Mar 2011		Austin Schaller		Created
 *
 ************************************************************************/
 

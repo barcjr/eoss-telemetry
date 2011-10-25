@@ -34,9 +34,6 @@ unsigned char timeUntilCallsignTime = 0;
 * Passed:		0-255 depending on which bit you want to look at from the
 *				schedule.
 * Returned:		0-1 depending on the state of the bit.
-* Note:			
-* Date:			Author:			Comments:
-* 16 Apr 2011	Nick ODell		Created
 *
 ************************************************************************/
 
@@ -113,8 +110,6 @@ void stepMorse()
 * Passed:		Morse code encoded as what's shown in MorseCodeLib. Terminate
 * 				sequences with 0xFF.
 * Returned:		None
-* Date:			Author:			Comments:
-* 16 Apr 2011	Nick O'Dell		Created
 *
 ************************************************************************/
 void scheduleMorse(unsigned char *morse)
@@ -155,9 +150,6 @@ void scheduleMorse(unsigned char *morse)
 *
 * Returned:		The length of the morse sequence in elements.
 *
-* Date:		Author:				Comments:
-* 17 Sep 2011	Nick O'Dell		Created
-*
 ************************************************************************/
 
 unsigned char getLengthOfMorse(unsigned char *morse)
@@ -177,9 +169,6 @@ unsigned char getLengthOfMorse(unsigned char *morse)
 * expects that txPos == writePos
 * Passed:		None
 * Returned:		None
-*
-* Date:			Author:			Comments:
-* 16 Apr 2011	Nick O'Dell		Created
 *
 ************************************************************************/
 void txCallsign()
@@ -202,9 +191,6 @@ void txCallsign()
 * Passed:		None
 * Returned:		None
 *
-* Date:			Author:			Comments:
-* 16 Apr 2011	Nick O'Dell		Created
-*
 ************************************************************************/
 void scheduleDump()
 {
@@ -224,9 +210,6 @@ void scheduleDump()
 * Purpose:		Changes altitude into the morse library sequence
 * Passed:		Altitude, Pointer to array
 * Returned:		None
-*
-* Date:			Author:			Comments:
-* 16 Apr 2011	Nick O'Dell		Created
 *
 ************************************************************************/
 

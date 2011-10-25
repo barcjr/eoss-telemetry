@@ -29,9 +29,6 @@
 * Returned:		None
 * Note:			Asynchronous Mode
 *
-* Date:			Author:				Comments:
-* 20 Sep 2011	Austin Schaller	 Created
-*
 ************************************************************************/
 void openTxUsart(void)
 {
