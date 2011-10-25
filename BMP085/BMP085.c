@@ -87,12 +87,28 @@ void BMP085_Known_Calibration(void)
 	md = 2868;
 }
 
+/************************************************************************
+*
+* Purpose:		Dumps calibration constants.
+* Passed:		Void
+* Returned:		Void
+*
+************************************************************************/
 void BMP_dump_calibration(void)
 {
 	printf((const far rom char*) "%ld\r\n%ld\r\n%ld\r\n%ld\r\n%ld\r\n%ld\r\n%ld\r\n%ld\r\n%ld\r\n%ld\r\n%ld\r\n,",\
 				ac1, ac2, ac3, ac4, ac5, ac6, b1, b2, mb, mc, md);
 }
 
+/************************************************************************
+*
+* Purpose:		If this is being compiled as part of EOSS_Launch, 
+* 				set the flag bit corresponding to a BMP error.
+* 				Otherwise, do nothing.
+* Passed:		Void
+* Returned:		Void
+*
+************************************************************************/
 void BMP_process_error()
 {
 #ifdef ERROR_HANDLING
@@ -150,8 +166,7 @@ unsigned short bmp085ReadShort(unsigned char address)
 * Purpose:		Will read three sequential 8-bit registers, and return
 				a 16-bit value.
 * Passed:		Unsigned char
-* Returned:		Short
-* Note:			Return value must be typecast to an signed short if reading a signed value!
+* Returned:		Unsigned long
 *
 ************************************************************************/
 unsigned long bmp085ReadThreeBytes(unsigned char address)
