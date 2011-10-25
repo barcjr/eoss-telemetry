@@ -71,6 +71,7 @@ void main()
 	
 	
 	BMP085_Calibration();
+	BMP_dump_calibration();
 	
 	printf((const far rom char*) "=========================\r\n");
 	printf((const far rom char*) "=========RESTART=========\r\n");

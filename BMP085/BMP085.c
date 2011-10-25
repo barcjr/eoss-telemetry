@@ -96,14 +96,22 @@ void BMP085_Known_Calibration(void)
 	md = 2868;
 }
 
+void BMP_dump_calibration(void)
+{
+	printf((const far rom char*) "%ld\r\n%ld\r\n%ld\r\n%ld\r\n%ld\r\n%ld\r\n%ld\r\n%ld\r\n%ld\r\n%ld\r\n%ld\r\n,",\
+				ac1, ac2, ac3, ac4, ac5, ac6, b1, b2, mb, mc, md);
+}
+
 void BMP_process_error()
 {
+#ifdef ERROR_HANDLING
 	if(BMP_err != 0)
 	{
 		flag |= BMP_ERROR;
 		printf((const far rom char*) "BMP_err: %d\r\n", BMP_err);
 		BMP_err = 0;
 	}
+#endif
 }
 
 /************************************************************************

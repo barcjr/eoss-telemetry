@@ -37,6 +37,8 @@
 #define		TRUE							1
 #define		FALSE							0
 
+#define		ERROR_HANDLING
+
 #define		EEPROM_CONTROL					0xA0
 
 // Stuff that flag gets set to.
