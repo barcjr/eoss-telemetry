@@ -23,13 +23,6 @@
 #define		INTERRUPT_CLOCK_SETTING			5536			// See doc/timer_math.markdown
 #define		MS_PER_CALLSIGN					10 * 60 * 1000	//10 minutes between callsigns, 60 seconds in a minute, 1000 milliseconds in a second.
 #define		TICKS_PER_CALLSIGN				10000			//MS_PER_CALLSIGN/MS_PER_TICK
-#define		PREFIX							10
-#define		SUFFIX							11
-#define		TERMINATOR						0xFF
-#define		DATA_BYTES_PER_LINE				4
-
-#define		CALLSIGN_SLOW_FACTOR			2
-#define		ALTITUDE_SLOW_FACTOR			2
 
 #define		FOSC							8000000
 #define		BAUD 							9600
