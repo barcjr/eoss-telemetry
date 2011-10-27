@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Module:			EOSS_Project.C
+* Module:			EOSS_Project.c
 * Description:		Edge Of Space Science (EOSS) Project contributed by
 *					BARC Jr.
 * Line length:		120 characters [only if the length is longer than 80 chars]

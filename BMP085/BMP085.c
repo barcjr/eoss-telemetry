@@ -1,3 +1,15 @@
+/************************************************************************
+*
+* Module:			BMP085.c
+* Description:		BMP085-specific code.
+* Line length:		120 characters [only if the length is longer than 80 chars]
+*
+* Date:				Authors:					Comments:
+* 16 Jul 2011		Austin Schaller				Created
+*					Nick ODell
+*
+************************************************************************/
+
 #include "../BMP085/BMP085.h"
 
 // * Defines ************************************************************

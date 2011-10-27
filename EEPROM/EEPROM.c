@@ -1,12 +1,6 @@
 #include <p18cxxx.h>
 #include <i2c.h>
 
-unsigned char calcI2CAddress(unsigned char base, unsigned char chip_num, unsigned char block_select)
-{
-	return base | (chip_num << 2) | (block_select << 1);
-}
-
-
 /********************************************************************
 *	Function Name:	EEByteWrite										*
 *	Return Value:	error condition status							*

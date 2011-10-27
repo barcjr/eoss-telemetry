@@ -1,9 +1,8 @@
 /************************************************************************
 *
-* Module:			BMP085_1.C
-* Description:		Code to determine BMP085 functionality.
+* Module:			EOSS_BMP085.c
+* Description:		Code to test BMP085 functionality.
 * Line length:		120 characters [only if the length is longer than 80 chars]
-* Functions:		See Below
 *
 * Date:				Authors:					Comments:
 * 16 Jul 2011		Austin Schaller				Created
