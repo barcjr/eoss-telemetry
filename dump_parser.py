@@ -19,6 +19,7 @@ def temp_parse(block):
 
 addr = 0
 errors = []
+readings = []
 while True:
     block = data[addr:addr+16]
     end = True
@@ -35,10 +36,14 @@ while True:
         block, up = press_parse(block)
         block, ut = temp_parse(block)
         
-        print calibrate(ut, up)
+        readings.append(calibrate(ut, up))
+    #If last byte has any error bits set, add it to the list.
     if block[0] != 0:
         errors.append(block[0])
         #print block[0]
     addr += 16
 print errors
+for reading in readings:
+    print reading[0], ',', reading[1]
+    
 
