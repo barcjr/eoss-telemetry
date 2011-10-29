@@ -176,7 +176,7 @@ unsigned short bmp085ReadShort(unsigned char address)
 /************************************************************************
 *
 * Purpose:		Will read three sequential 8-bit registers, and return
-				a 16-bit value.
+				a 24-bit value.
 * Passed:		Unsigned char
 * Returned:		Unsigned long
 *
