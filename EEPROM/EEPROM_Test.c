@@ -204,8 +204,8 @@ void main()
  		
 		printf((const far rom char*) "MASTER: %02x, SSPADD: %d\r\n", MASTER, SSPADD);
 		
-		control = calcI2CAddress(CONTROL_BASE, CHIP_NUM, 0);
-		EEPROM_memwrite(control, 0xFF);
+		control = CONTROL_BASE;
+		//EEPROM_memwrite(control, 0xFF);
 		//EEPROM_memcheck(control, 0xFF);
 		//EEPROM_memdump(control);
 		
