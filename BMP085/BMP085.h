@@ -4,3 +4,4 @@ long bmp085ReadTemp(void);
 long bmp085ReadPressure(void);
 unsigned short bmp085ReadShort(unsigned char address);
 void bmp085Convert(long *temperature, long *pressure);
+void BMP_process_error();

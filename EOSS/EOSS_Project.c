@@ -190,7 +190,7 @@ void takeReading()
 	
 	if(eepromAddr >= MAX_EEPROM_SIZE)
 	{
-		printf("Out of space\r\n");
+		printf((const far rom char*) "Out of space\r\n");
 		return;
 	}	
 	printf((const far rom char*) "Getting a reading\r\n");

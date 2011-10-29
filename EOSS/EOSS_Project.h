@@ -10,5 +10,7 @@ void openTxUsart();
 void formatAltitude(unsigned short alt, unsigned char *morsePointer);
 void txUsart(const rom char *dataString);
 void scheduleDump();
+void findUnusedAddress();
+void takeReading();
 
 #endif
