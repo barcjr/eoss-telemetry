@@ -141,7 +141,7 @@ void onInterrupt(void)
 		WriteTimer0(INTERRUPT_CLOCK_SETTING);
 		timeSinceCallsign++;
 		stepMorse();
-		SPEAKER_PIN = MORSE_PIN;
+		SPEAKER_PIN = ~MORSE_PIN;
 		//printf("%c", MORSE_PIN ? '.' : ' ');
 		INTCONbits.TMR0IF = 0; // Clear the interrupt
 	}
