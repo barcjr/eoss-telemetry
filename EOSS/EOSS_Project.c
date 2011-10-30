@@ -8,7 +8,7 @@
 *
 * Date:				Authors:			Comments:
 * 2 Jul 2011		Austin Schaller		Created
-*			Nick ODell
+*					Nick ODell
 *
 ************************************************************************/
 
@@ -236,7 +236,7 @@ void takeReading()
 		eepromAddr += 16;
 		eepromBufferIndex = 0;
 	}
-	nextReadingTime += 50;
+	nextReadingTime += 20;
 }
 // Tramples on eepromBuffer
 void findUnusedAddress() {
