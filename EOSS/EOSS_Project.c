@@ -326,7 +326,7 @@ void main()
 	
 	while(1)
 	{
-		bmp085Convert(&temperature, &pressure);
+		bmp085Convert(&temperature, &pressure, 5);
 		if((timeSinceCallsign & 0x0F) == 0)
 		{
 			//printf((const far rom char*) "timeSinceCallsign: %d\r\n", timeSinceCallsign);
@@ -340,7 +340,7 @@ void main()
 			
 			//printf((const far rom char*) "Getting more morse\r\n");
 			// Temperature & Pressure Measurements
-			bmp085Convert(&temperature, &pressure);
+			bmp085Convert(&temperature, &pressure, 5);
 			
 			// Altitude Measurement
 			temporary = (double) pressure / 101325;

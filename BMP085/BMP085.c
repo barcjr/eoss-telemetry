@@ -266,8 +266,8 @@ long bmp085ReadPressure(void)
 
 /************************************************************************
 *
-* Purpose:		Will read the 16-bit pressure value from BMP085 sensor.
-* Passed:		Long *temperature, long *pressure
+* Purpose:		Will find callibrated pressure + temperature
+* Passed:		Long *temperature, long *pressure, unsigned char readings
 * Returned:		Void
 * Note:
 *
@@ -278,15 +278,25 @@ long bmp085ReadPressure(void)
 // bit shift, so this is not precisely the same.
 #define SHIFT(shift) (((long) 1) << (shift))
 
-void bmp085Convert(long *temperature, long *pressure)
+void bmp085Convert(long *temperature, long *pressure, unsigned char readings)
 {
 	long ut;
 	long up;
 	long x1, x2, b5, b6, x3, b3, p;
 	unsigned long b4, b7;
-
-	ut = bmp085ReadTemp();
-	up = bmp085ReadPressure();
+	unsigned char i;
+	
+	ut = 0;
+	up = 0;
+	
+	//Take many readings, average
+	for(i = 0; i < readings; i--)
+	{
+		ut += bmp085ReadTemp();
+		up += bmp085ReadPressure();
+	}
+	ut = ut / readings;
+	up = up / readings;
 
 	// For running the conversion algorithm against known datasheet values.
 	//ut = 27898;
