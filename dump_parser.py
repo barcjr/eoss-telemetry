@@ -2,7 +2,9 @@ import binascii
 import re
 from sensor_calibration_test import calibrate
 
-dump = open("dump.txt").read()
+TIME_BETWEEN_READINGS = 3 #seconds
+
+dump = open(raw_input("Filename of dump file: ")).read()
 
 # Look for at least 500 hex digits
 data = re.search("[0-9a-fA-F]{500,}", dump).group(0)
@@ -20,30 +22,47 @@ def temp_parse(block):
 addr = 0
 errors = []
 readings = []
+#readings_list = []
 while True:
+    #copy out 16 bytes at a time
     block = data[addr:addr+16]
-    end = True
+
+    
     # Is this block entirely 0xFF?
     # If so, end the program
+    end = True
     for b in block:
         if b != 255:
             end = False
             break
     if end:
+        print "Found unwritten block, stopping."
         break
+
+    
     #print ut, up
     while len(block) > 5:
+        #chomp off the data, callibrate it, add it to the list of readings
         block, up = press_parse(block)
         block, ut = temp_parse(block)
         
         readings.append(calibrate(ut, up))
+    
     #If last byte has any error bits set, add it to the list.
     if block[0] != 0:
+        if block[0] == 1:
+            #That's a reboot!
+            #The last three readings were in the wrong list, move them.
+            readings_list.append(readings[:-3])
+            readings = readings[-3:]
         errors.append(block[0])
-        #print block[0]
+
+    #Now do it again!
     addr += 16
+
 print errors
-for reading in readings:
-    print reading[0], ',', reading[1]
-    
+
+print "List of uptime (minutes):"
+print map(lambda x: len(x)*TIME_BETWEEN_READINGS/float(60), readings_list)
+
 
