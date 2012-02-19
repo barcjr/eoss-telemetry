@@ -290,7 +290,7 @@ void bmp085Convert(long *temperature, long *pressure, unsigned char readings)
 	up = 0;
 	
 	//Take many readings, average
-	for(i = 0; i < readings; i--)
+	for(i = 0; i < readings; i++)
 	{
 		ut += bmp085ReadTemp();
 		up += bmp085ReadPressure();
