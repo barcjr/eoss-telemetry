@@ -22,7 +22,7 @@ def temp_parse(block):
 addr = 0
 errors = []
 readings = []
-#readings_list = []
+readings_list = []
 while True:
     #copy out 16 bytes at a time
     block = data[addr:addr+16]
@@ -55,14 +55,20 @@ while True:
             #The last three readings were in the wrong list, move them.
             readings_list.append(readings[:-3])
             readings = readings[-3:]
-        errors.append(block[0])
+        else:
+            errors.append(block[0])
 
     #Now do it again!
     addr += 16
 
+# Issue: The first period had no readings, and the last wasn't recorded at all!
+# So that's what this hack is for.
+readings_list = readings_list[1:] + readings
+
+print "Errors:",
 print errors
 
-print "List of uptime (minutes):"
+print "List of uptime (minutes):",
 print map(lambda x: len(x)*TIME_BETWEEN_READINGS/float(60), readings_list)
 
 
