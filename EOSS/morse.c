@@ -187,6 +187,8 @@ void txCallsign()
 
 	callsignTimeLeft = length;
 	scheduleMorse(&morse[0]);
+	//Do it again, but at altitude speed.
+	scheduleMorse(&morse[0]);
 	//scheduleDump();
 }
 
