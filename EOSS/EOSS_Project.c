@@ -23,6 +23,7 @@
 #define		INTERRUPT_CLOCK_SETTING			5536			// See doc/timer_math.markdown
 #define		MS_PER_CALLSIGN					10 * 60 * 1000	//10 minutes between callsigns, 60 seconds in a minute, 1000 milliseconds in a second.
 #define		TICKS_PER_CALLSIGN				10000			//MS_PER_CALLSIGN/MS_PER_TICK
+#define		SAMPLE_NUM						20
 
 #define		FOSC							8000000
 #define		BAUD 							9600
@@ -326,7 +327,7 @@ void main()
 	
 	while(1)
 	{
-		bmp085Convert(&temperature, &pressure, 5);
+		bmp085Convert(&temperature, &pressure, SAMPLE_NUM);
 		if((timeSinceCallsign & 0x0F) == 0)
 		{
 			//printf((const far rom char*) "timeSinceCallsign: %d\r\n", timeSinceCallsign);
@@ -340,7 +341,7 @@ void main()
 			
 			//printf((const far rom char*) "Getting more morse\r\n");
 			// Temperature & Pressure Measurements
-			bmp085Convert(&temperature, &pressure, 5);
+			bmp085Convert(&temperature, &pressure, SAMPLE_NUM);
 			
 			// Altitude Measurement
 			temporary = (double) pressure / 101325;
