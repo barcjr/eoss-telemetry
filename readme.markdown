@@ -12,3 +12,7 @@ Morse Code
 ----------
 
 See [doc/morse.markdown](https://github.com/nickodell/eoss-telemetry/blob/master/doc/morse.markdown)
+
+EOSS Flight Results
+-------------------
+See [EOSS_Flight_Results.md](https://github.com/barcjr/eoss-telemetry/blob/master/EOSS_Flight_Results.md)
