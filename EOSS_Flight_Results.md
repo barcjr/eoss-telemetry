@@ -7,6 +7,7 @@ Payload Design
 -----------
 Using a PIC microcontroller, a BMP085 pressure and temperature sensor, an EEPROM memory chip, and a 10-meter
 transmitter - all designed from scratch - the payload successfully performs the following actions:
+
 1. Upon startup, transmits our amateur radio callsign for FCC identification. Our scheduling code ensures that we
 	transmit our callsign at 10-minute intervals, depending on the perceived data measurements. If the data is
 	expected to extend past the 10-minute period, the PIC will merely store the data and transmit the callsign.		
